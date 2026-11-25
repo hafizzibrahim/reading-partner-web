@@ -1,249 +1,141 @@
-// Store & State Management (dengan localStorage sync)
-const DEFAULT_BOOKS = [
-  {
-    id: '1',
-    title: 'Laskar Pelangi',
-    author: 'Andrea Hirata',
-    stock_total: 3,
-    stock_available: 2,
-    cover_url: 'images/cover_laskar_pelangi.jpg'
-  },
-  {
-    id: '2',
-    title: 'Bumi Manusia',
-    author: 'Pramoedya Ananta Toer',
-    stock_total: 4,
-    stock_available: 3,
-    cover_url: 'images/cover_bumi_manusia.jpg'
-  },
-  {
-    id: '3',
-    title: 'Filosofi Kopi',
-    author: 'Dewi Lestari',
-    stock_total: 1,
-    stock_available: 0,
-    cover_url: 'images/cover_filosofi_kopi.jpg'
-  },
-  {
-    id: '4',
-    title: 'Pulang',
-    author: 'Leila S. Chudori',
-    stock_total: 2,
-    stock_available: 1,
-    cover_url: 'images/cover_pulang.jpg'
-  },
-  {
-    id: '5',
-    title: 'Laut Bercerita',
-    author: 'Leila S. Chudori',
-    stock_total: 4,
-    stock_available: 4,
-    cover_url: 'images/cover_laut_bercerita.jpg'
-  },
-  {
-    id: '6',
-    title: 'Negeri 5 Menara',
-    author: 'Ahmad Fuadi',
-    stock_total: 1,
-    stock_available: 0,
-    cover_url: 'images/cover_negeri_5_menara.jpg'
-  },
-  {
-    id: '7',
-    title: 'Cantik Itu Luka',
-    author: 'Eka Kurniawan',
-    stock_total: 2,
-    stock_available: 2,
-    cover_url: 'images/cover_cantik_itu_luka.jpg'
-  },
-  {
-    id: '8',
-    title: 'Hujan',
-    author: 'Tere Liye',
-    stock_total: 5,
-    stock_available: 5,
-    cover_url: 'images/cover_hujan.jpg'
-  }
-];
+// Data & auth via Supabase. Butuh <script src="supabase-js"> dimuat sebelum file ini.
+// Key "publishable" memang aman di frontend — keamanan diatur RLS (lihat supabase/schema.sql).
+const SUPABASE_URL = 'https://zkttqoxnhkvjfkolglcr.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_ZTzakDmJGWgtHnLZmIqwOg_yao68WJq';
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const DEFAULT_LOANS = [
-  {
-    id: '101',
-    book_id: '1',
-    book_title: 'Laskar Pelangi',
-    borrower_name: 'Siti Rahmawati',
-    borrower_email: 'siti.rahma@email.com',
-    borrower_wa: '0812-3456-7890',
-    borrower_address: 'Jl. Braga No. 48, Bandung',
-    id_photo_url: null,
-    status: 'active',
-    borrowed_at: '24 Nov 2026'
-  },
-  {
-    id: '102',
-    book_id: '3',
-    book_title: 'Filosofi Kopi',
-    borrower_name: 'Budi Santoso',
-    borrower_email: 'budi.santoso@email.com',
-    borrower_wa: '0857-9912-4410',
-    borrower_address: 'Jl. Dago Atas No. 19, Bandung',
-    id_photo_url: null,
-    status: 'active',
-    borrowed_at: '22 Nov 2026'
-  },
-  {
-    id: '103',
-    book_id: '6',
-    book_title: 'Negeri 5 Menara',
-    borrower_name: 'Nadia Kusuma',
-    borrower_email: 'nadia.k@email.com',
-    borrower_wa: '0813-7781-2094',
-    borrower_address: 'Jl. Setiabudi No. 102, Bandung',
-    id_photo_url: null,
-    status: 'active',
-    borrowed_at: '20 Nov 2026'
-  },
-  {
-    id: '104',
-    book_id: '2',
-    book_title: 'Bumi Manusia',
-    borrower_name: 'Rizky Pratama',
-    borrower_email: 'rizky.pratama@email.com',
-    borrower_wa: '0821-5504-1182',
-    borrower_address: 'Jl. Riau No. 74, Bandung',
-    id_photo_url: null,
-    status: 'returned',
-    borrowed_at: '15 Nov 2026',
-    returned_at: '23 Nov 2026'
+// Kategori contoh — ganti sesuai koleksi komunitas
+const CATEGORIES = ['Novel', 'Fiksi Sejarah', 'Kumpulan Cerpen', 'Non-fiksi', 'Pengembangan Diri', 'Anak & Remaja', 'Lainnya'];
+const FALLBACK_COVER = 'images/brand_reading_partner_1.jpg';
+const MAX_UPLOAD = 2 * 1024 * 1024; // sama dengan limit bucket
+
+// Sampul rusak / URL mati / offline -> tampilkan logo brand
+document.addEventListener('error', (e) => {
+  const img = e.target;
+  if (img.tagName === 'IMG' && !img.dataset.fallback) {
+    img.dataset.fallback = '1';
+    img.src = FALLBACK_COVER;
   }
-];
+}, true);
+
+// Lempar error Supabase sebagai Error biasa dengan pesan yang bisa ditampilkan
+function must({ data, error }) {
+  if (error) throw new Error(error.message);
+  return data;
+}
+
+// Pesan error auth Supabase -> bahasa Indonesia
+function authError(err) {
+  const m = err.message || '';
+  if (/invalid login credentials/i.test(m)) return new Error('Email atau password salah.');
+  if (/already (been )?registered/i.test(m)) return new Error('Email sudah terdaftar. Silakan masuk.');
+  if (/password should be|at least 6/i.test(m)) return new Error('Password minimal 6 karakter.');
+  if (/email not confirmed/i.test(m)) return new Error('Email belum dikonfirmasi. Minta admin mematikan "Confirm email" di Supabase.');
+  if (/rate limit/i.test(m)) return new Error('Terlalu banyak percobaan. Coba lagi beberapa saat.');
+  return new Error(m);
+}
+
+async function upload(bucket, path, file) {
+  if (file.size > MAX_UPLOAD) throw new Error('Ukuran gambar maksimal 2MB.');
+  must(await sb.storage.from(bucket).upload(path, file, { upsert: false }));
+  return path;
+}
+
+const ext = (file) => (file.name.split('.').pop() || 'jpg').toLowerCase();
 
 window.PerpusStore = {
-  getBooks() {
-    const raw = localStorage.getItem('perpus_books');
-    if (!raw) {
-      localStorage.setItem('perpus_books', JSON.stringify(DEFAULT_BOOKS));
-      return DEFAULT_BOOKS;
+  sb,
+  CATEGORIES,
+
+  // ===== Auth =====
+  // Profil user yang sedang masuk (id, email, name, wa, address, is_admin) atau null
+  async getUser() {
+    const { data: { session } } = await sb.auth.getSession();
+    if (!session) return null;
+    const profile = must(await sb.from('profiles').select('*').eq('id', session.user.id).maybeSingle());
+    return profile || { id: session.user.id, email: session.user.email, name: session.user.email, is_admin: false };
+  },
+  onAuthChange(cb) {
+    sb.auth.onAuthStateChange((event) => setTimeout(() => cb(event), 0)); // setTimeout: hindari deadlock auth-js
+  },
+  // Email + password tanpa kirim email apa pun (syarat: "Confirm email" dimatikan di Supabase)
+  async signIn(email, password) {
+    const { error } = await sb.auth.signInWithPassword({ email, password });
+    if (error) throw authError(error);
+  },
+  async signUp(name, email, password) {
+    const { data, error } = await sb.auth.signUp({ email, password, options: { data: { full_name: name } } });
+    if (error) throw authError(error);
+    if (!data.session) throw new Error('Akun dibuat, tapi "Confirm email" masih aktif di Supabase. Minta admin mematikannya.');
+  },
+  async signOut() { await sb.auth.signOut(); },
+
+  // ===== Data =====
+  async getBooks() {
+    return must(await sb.from('books').select('*').order('created_at', { ascending: false }).order('title'));
+  },
+  // RLS: user biasa hanya dapat pinjamannya sendiri, admin dapat semua
+  async getLoans() {
+    return must(await sb.from('loans').select('*').order('borrowed_at', { ascending: false }).order('created_at', { ascending: false }));
+  },
+
+  async borrowBook(bookId, borrower, photoFile) {
+    let photoPath = null;
+    if (photoFile) {
+      const { data: { user } } = await sb.auth.getUser();
+      photoPath = await upload('id-photos', `${user.id}/${Date.now()}.${ext(photoFile)}`, photoFile);
     }
-    try {
-      let books = JSON.parse(raw);
-      // Auto-migrate legacy URLs to local images
-      let updated = false;
-      books = books.map(b => {
-        const def = DEFAULT_BOOKS.find(d => d.title === b.title || d.id === b.id);
-        if (def && (!b.cover_url || b.cover_url.includes('googleusercontent.com'))) {
-          b.cover_url = def.cover_url;
-          updated = true;
-        }
-        return b;
-      });
-      if (updated) {
-        localStorage.setItem('perpus_books', JSON.stringify(books));
-      }
-      return books;
-    } catch (e) {
-      return DEFAULT_BOOKS;
+    return must(await sb.rpc('borrow_book', {
+      p_book_id: bookId, p_name: borrower.name, p_wa: borrower.wa, p_address: borrower.address, p_photo_path: photoPath,
+    }));
+  },
+
+  async returnBook(loanId) {
+    return must(await sb.rpc('return_loan', { p_loan_id: loanId }));
+  },
+
+  async addBook(book, coverFile) {
+    let cover_url = book.cover_url || null;
+    if (coverFile) {
+      const path = await upload('covers', `${Date.now()}.${ext(coverFile)}`, coverFile);
+      cover_url = sb.storage.from('covers').getPublicUrl(path).data.publicUrl;
     }
+    const stock = Number(book.stock) || 1;
+    return must(await sb.from('books').insert({
+      title: book.title,
+      author: book.author,
+      category: book.category || 'Lainnya',
+      isbn: book.isbn || null,
+      synopsis: book.synopsis || null,
+      cover_url: cover_url || FALLBACK_COVER,
+      stock_total: stock,
+      stock_available: stock,
+    }).select().single());
   },
 
-  saveBooks(books) {
-    localStorage.setItem('perpus_books', JSON.stringify(books));
+  async updateStock(bookId, delta) {
+    return must(await sb.rpc('adjust_stock', { p_book_id: bookId, p_delta: delta }));
   },
 
-  getLoans() {
-    const raw = localStorage.getItem('perpus_loans');
-    if (!raw) {
-      localStorage.setItem('perpus_loans', JSON.stringify(DEFAULT_LOANS));
-      return DEFAULT_LOANS;
-    }
-    try {
-      return JSON.parse(raw);
-    } catch (e) {
-      return DEFAULT_LOANS;
-    }
+  async deleteBook(bookId) {
+    must(await sb.from('books').delete().eq('id', bookId));
   },
 
-  saveLoans(loans) {
-    localStorage.setItem('perpus_loans', JSON.stringify(loans));
+  // Link sementara (60 detik) untuk foto KTP di bucket privat
+  async photoUrl(path) {
+    return must(await sb.storage.from('id-photos').createSignedUrl(path, 60)).signedUrl;
   },
 
-  borrowBook(bookId, borrowerData) {
-    const books = this.getBooks();
-    const book = books.find(b => b.id === bookId);
-    if (!book || book.stock_available <= 0) {
-      throw new Error('Buku tidak tersedia untuk dipinjam.');
-    }
-
-    book.stock_available -= 1;
-    this.saveBooks(books);
-
-    const loans = this.getLoans();
-    const newLoan = {
-      id: String(Date.now()),
-      book_id: book.id,
-      book_title: book.title,
-      borrower_name: borrowerData.name,
-      borrower_email: borrowerData.email,
-      borrower_wa: borrowerData.wa,
-      borrower_address: borrowerData.address,
-      id_photo_url: borrowerData.idPhotoUrl || null,
-      status: 'active',
-      borrowed_at: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })
-    };
-    loans.unshift(newLoan);
-    this.saveLoans(loans);
-    return newLoan;
+  // ===== Util =====
+  // Escape teks sebelum masuk innerHTML
+  esc(s) {
+    return String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   },
 
-  returnBook(loanId) {
-    const loans = this.getLoans();
-    const loan = loans.find(l => l.id === loanId);
-    if (!loan || loan.status === 'returned') return null;
-
-    loan.status = 'returned';
-    loan.returned_at = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
-    this.saveLoans(loans);
-
-    const books = this.getBooks();
-    const book = books.find(b => b.id === loan.book_id || b.title === loan.book_title);
-    if (book) {
-      book.stock_available = Math.min(book.stock_total, book.stock_available + 1);
-      this.saveBooks(books);
-    }
-    return loan;
-  },
-
-  addBook(newBook) {
-    const books = this.getBooks();
-    const item = {
-      id: String(Date.now()),
-      title: newBook.title,
-      author: newBook.author,
-      stock_total: Number(newBook.stock) || 1,
-      stock_available: Number(newBook.stock) || 1,
-      cover_url: newBook.cover_url || 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&w=600&q=80'
-    };
-    books.unshift(item);
-    this.saveBooks(books);
-    return item;
-  },
-
-  updateStock(bookId, delta) {
-    const books = this.getBooks();
-    const book = books.find(b => b.id === bookId);
-    if (!book) return;
-    const newTotal = Math.max(1, book.stock_total + delta);
-    const newAvail = Math.max(0, book.stock_available + delta);
-    book.stock_total = newTotal;
-    book.stock_available = newAvail;
-    this.saveBooks(books);
-    return book;
-  },
-
-  deleteBook(bookId) {
-    const books = this.getBooks().filter(b => b.id !== bookId);
-    this.saveBooks(books);
-    return books;
+  // '2026-11-24' -> '24 Nov 2026'
+  fmtDate(iso) {
+    if (!iso) return '-';
+    return new Date(iso + 'T00:00:00').toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
   },
 
   showToast(message, type = 'success') {
@@ -251,7 +143,6 @@ window.PerpusStore = {
     if (!toast) {
       toast = document.createElement('div');
       toast.id = 'app-toast';
-      toast.className = 'fixed bottom-5 right-5 z-50 flex items-center gap-2.5 px-4 py-3 rounded-lg text-white font-medium text-sm shadow-xl transition-all duration-300 transform translate-y-10 opacity-0 pointer-events-none';
       document.body.appendChild(toast);
     }
     toast.className = `fixed bottom-5 right-5 z-50 flex items-center gap-2.5 px-4 py-3 rounded-lg text-white font-medium text-sm shadow-xl transition-all duration-300 transform ${
@@ -259,10 +150,11 @@ window.PerpusStore = {
     }`;
     toast.innerHTML = `
       <span class="material-symbols-outlined text-xl">${type === 'error' ? 'error' : 'check_circle'}</span>
-      <span>${message}</span>
+      <span>${this.esc(message)}</span>
     `;
-    setTimeout(() => {
-      toast.classList.add('translate-y-10', 'opacity-0');
-    }, 3000);
+    clearTimeout(this._toastTimer);
+    this._toastTimer = setTimeout(() => {
+      toast.classList.add('translate-y-10', 'opacity-0', 'pointer-events-none');
+    }, type === 'error' ? 5000 : 3000);
   }
 };

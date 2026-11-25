@@ -1,0 +1,89 @@
+/* Gaya doodle (hybrid) — menimpa class Tailwind yang sudah ada lewat selector,
+   jadi markup & template JS tidak perlu diubah satu per satu. */
+:root {
+  --ink: #2b2b27;
+  --wobble: 16px 6px 14px 7px / 7px 14px 6px 16px;
+  --wobble-sm: 10px 4px 9px 5px / 5px 9px 4px 10px;
+}
+
+.material-symbols-outlined {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  line-height: 1 !important;
+  vertical-align: middle;
+  overflow: hidden; /* selama font ikon belum ke-load, teks "admin_panel_settings" dkk nggak bikin halaman meluber */
+}
+
+/* Font spidol hanya punya 1 ketebalan — cegah faux-bold yang buram */
+.font-headline, .font-display, .font-title { font-weight: 400 !important; letter-spacing: .01em; }
+.font-title { font-size: 1.08em; }
+/* Angka = informasi: pakai font rapi biar nggak salah baca (mis. "17" jadi "1+") */
+.font-headline.tabular-nums { font-family: "Nunito", sans-serif; font-weight: 800 !important; }
+
+/* Header: garis tinta */
+header.sticky { border-bottom: 2px solid var(--ink); box-shadow: none; }
+
+/* Kartu, panel, hero, dialog */
+article.border, .rounded-2xl.border, dialog {
+  border: 2px solid var(--ink);
+  border-radius: var(--wobble);
+  box-shadow: 4px 4px 0 var(--ink);
+}
+article.border { transition: transform .15s, box-shadow .15s; }
+article.border:hover { transform: translate(-2px, -2px) rotate(-.3deg); box-shadow: 6px 6px 0 var(--ink); }
+/* Kartu di dalam panel (mobile loans) cukup tanpa bayangan tebal */
+.rounded-2xl article.border { box-shadow: 2px 2px 0 var(--ink); }
+
+/* Sampul buku dibingkai tinta */
+article .aspect-\[3\/4\], #modal-book-cover { border: 1.5px solid var(--ink); border-radius: var(--wobble-sm); }
+
+/* Tombol utama */
+button.bg-primary, a.bg-primary {
+  border: 2px solid var(--ink);
+  border-radius: var(--wobble-sm);
+  box-shadow: 2px 2px 0 var(--ink);
+  transition: transform .1s, box-shadow .1s;
+}
+button.bg-primary:hover, a.bg-primary:hover { opacity: 1; transform: translate(-1px, -1px); box-shadow: 3px 3px 0 var(--ink); }
+button.bg-primary:active, a.bg-primary:active { transform: translate(2px, 2px); box-shadow: none; }
+
+/* Tombol sekunder / outline & badge: garis tinta tipis */
+button.border, a.border, span.rounded-full {
+  border: 1.5px solid var(--ink);
+  border-radius: var(--wobble-sm);
+}
+
+/* Input tetap rapi (informasi), hanya radius sedikit goyang */
+input.border, select.border, textarea.border {
+  border: 1.5px solid #bdb7a6;
+  border-radius: var(--wobble-sm);
+}
+
+/* Area upload & empty state: garis putus-putus tinta */
+label.border-dashed, div.border-dashed { border-color: var(--ink) !important; border-radius: var(--wobble); }
+
+/* Kotak info kecil (pratinjau buku di modal, stepper stok, foto ID) */
+.bg-surface-subtle.border:not(.border-dashed) {
+  border: 1.5px solid var(--ink);
+  border-radius: var(--wobble-sm);
+}
+
+/* Toast */
+#app-toast {
+  border: 2px solid var(--ink);
+  border-radius: var(--wobble-sm);
+  box-shadow: 3px 3px 0 var(--ink);
+}
+
+/* Tab admin & filter katalog.
+   Aktif: tetap hijau saat hover (class hover:bg-* sisa toggle JS nggak boleh menimpa).
+   Nonaktif: hover ala doodle — sedikit terangkat + bayangan tinta. */
+.admin-tab, .filter-pill { transition: transform .1s, box-shadow .1s, background-color .15s; }
+.admin-tab.bg-primary:hover, .filter-pill.bg-primary:hover { background-color: #4f6b45; color: #fff; }
+.admin-tab:not(.bg-primary):hover, .filter-pill:not(.bg-primary):hover {
+  background-color: #efebe0;
+  color: #1f1f1c;
+  transform: translate(-1px, -1px);
+  box-shadow: 2px 2px 0 var(--ink);
+}

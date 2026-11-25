@@ -3,98 +3,82 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard Admin — Perpustakaan</title>
+  <title>Dashboard Admin — Reading Partner</title>
+  <link rel="icon" type="image/png" href="ic_logo.png">
   
   <!-- Tailwind CSS via CDN -->
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-  <script id="tailwind-config">
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          colors: {
-            'forest-green': '#347928',
-            'forest-green-dark': '#163806',
-            'mint-green': '#c0eba6',
-            'warm-yellow': '#f4de40',
-            'info-teal': '#1684a7',
-            'info-teal-text': '#006684',
-            'pure-white': '#ffffff',
-            'primary': '#347928',
-            'on-primary': '#ffffff',
-            'primary-soft': '#c0eba6',
-            'on-primary-soft': '#163806',
-            'secondary': '#1684a7',
-            'on-secondary': '#0D0D0D',
-            'secondary-soft': '#E0F4FF',
-            'tertiary': '#f4de40',
-            'on-tertiary': '#201C00',
-            'surface': '#ffffff',
-            'surface-subtle': '#FAFEF2',
-            'surface-muted': '#EEF2E7',
-            'on-surface': '#181D16',
-            'on-surface-muted': '#444840',
-            'outline': '#747870',
-            'outline-subtle': '#DCE5D4',
-            'disabled-surface': '#E0E4D9',
-            'on-disabled': '#5B6057',
-          },
-          fontFamily: {
-            'display': ['"Crimson Text"', 'serif'],
-            'headline': ['"Crimson Text"', 'serif'],
-            'title': ['"Lato"', 'sans-serif'],
-            'body': ['"Lato"', 'sans-serif'],
-            'label': ['"Lato"', 'sans-serif'],
-          }
-        }
-      }
-    };
-  </script>
+  <script src="js/theme.js"></script>
 
-  <!-- Google Fonts & Material Symbols -->
+  <!-- Google Fonts: Gochi Hand (judul), Patrick Hand (judul buku), Nunito (informasi) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,600;0,700;1,600&family=Lato:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Gochi+Hand&family=Patrick+Hand&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=block" rel="stylesheet">
-
-  <style>
-    .material-symbols-outlined {
-      display: inline-block;
-      width: 1em;
-      height: 1em;
-      line-height: 1 !important;
-      vertical-align: middle;
-    }
-  </style>
+  <link rel="stylesheet" href="css/doodle.css">
 </head>
 <body class="bg-surface-subtle text-on-surface font-body min-h-screen flex flex-col antialiased selection:bg-mint-green selection:text-forest-green-dark">
 
   <!-- Admin Top Bar -->
-  <header class="sticky top-0 z-30 bg-surface/95 backdrop-blur-md border-b border-outline-subtle shadow-xs">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between gap-4">
+  <!-- ================= LOGIN ADMIN (gerbang) ================= -->
+  <section id="admin-login" class="hidden flex-1 flex items-center justify-center px-4 py-10">
+    <div class="w-full max-w-sm bg-surface border border-outline-subtle rounded-2xl p-6 flex flex-col gap-5">
+      <div class="flex flex-col items-center gap-2 text-center">
+        <img src="ic_logo.png" alt="Reading Partner" class="h-16 w-auto object-contain">
+        <h1 class="font-headline text-2xl text-forest-green">Masuk Admin</h1>
+        <p class="text-xs text-on-surface-muted">Khusus pengelola Reading Partner</p>
+      </div>
+
+      <!-- Belum masuk -->
+      <form id="gate-signin" onsubmit="handleAdminLogin(event)" class="flex flex-col gap-4">
+        <label class="flex flex-col gap-1">
+          <span class="font-label text-xs font-bold text-on-surface">Email Admin</span>
+          <input type="email" id="login-email" required placeholder="admin@readingpartner.id" autocomplete="username" class="w-full px-3.5 py-2.5 rounded-lg bg-surface border border-outline-subtle text-sm text-on-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none">
+        </label>
+        <label class="flex flex-col gap-1">
+          <span class="font-label text-xs font-bold text-on-surface">Password</span>
+          <input type="password" id="login-password" required autocomplete="current-password" class="w-full px-3.5 py-2.5 rounded-lg bg-surface border border-outline-subtle text-sm text-on-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none">
+        </label>
+        <button type="submit" class="w-full mt-1 py-2.5 rounded-lg bg-primary text-on-primary font-label text-sm font-bold cursor-pointer flex items-center justify-center gap-1.5">
+          <span class="material-symbols-outlined text-base">login</span>
+          <span>Masuk ke Dashboard</span>
+        </button>
+      </form>
+
+      <!-- Sudah masuk tapi bukan admin -->
+      <div id="gate-denied" class="hidden flex flex-col gap-3 text-center">
+        <div class="bg-surface-subtle border border-outline-subtle rounded-lg p-4 text-sm text-on-surface">
+          Akun <strong id="gate-email"></strong> belum terdaftar sebagai admin.
+        </div>
+        <button type="button" onclick="handleLogout()" class="w-full py-2.5 rounded-lg border border-outline-subtle text-sm font-bold text-on-surface hover:bg-surface-subtle cursor-pointer">Masuk dengan akun lain</button>
+      </div>
+    </div>
+  </section>
+
+  <header id="admin-header" class="sticky top-0 z-30 bg-surface/95 backdrop-blur-md border-b border-outline-subtle shadow-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 sm:py-3 flex items-center justify-between gap-4">
       
       <!-- Brand & Admin Indicator -->
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-lg bg-mint-green text-forest-green flex items-center justify-center shadow-xs overflow-hidden">
-          <img src="images/brand_reading_partner_1.jpg" alt="Reading Partner" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
-          <span class="material-symbols-outlined text-2xl font-bold hidden">admin_panel_settings</span>
-        </div>
-        <div>
+      <div class="flex items-center gap-2.5 sm:gap-3.5 min-w-0">
+        <a href="index.html" class="shrink-0 inline-flex items-center hover:opacity-90 transition-opacity" title="Kembali ke Beranda">
+          <img src="ic_logo.png" alt="Reading Partner" class="h-10 sm:h-14 w-auto object-contain">
+        </a>
+        <div class="border-l border-outline-subtle pl-2.5 sm:pl-3.5 min-w-0">
           <div class="flex items-center gap-2">
-            <h1 class="font-headline text-xl sm:text-2xl font-bold text-forest-green leading-none">Dashboard Admin</h1>
-            <span class="hidden sm:inline-block px-2 py-0.5 rounded-full bg-forest-green text-white font-label text-[10px] font-bold">Reading Partner</span>
+            <h1 class="font-headline text-lg sm:text-2xl font-bold text-forest-green leading-none whitespace-nowrap"><span class="hidden sm:inline">Dashboard </span>Admin</h1>
+            <span class="hidden sm:inline-block px-2 py-0.5 rounded-full bg-forest-green text-white font-label text-[10px] font-bold">Admin Portal</span>
           </div>
-          <span class="font-label text-xs text-on-surface-muted">Kelola sirkulasi buku dan data peminjam</span>
+          <span class="hidden sm:block font-label text-xs text-on-surface-muted">Kelola sirkulasi buku dan data peminjam</span>
         </div>
       </div>
 
       <!-- Quick Actions -->
-      <div class="flex items-center gap-2.5">
-        <a href="index.html" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg border border-info-teal bg-surface text-info-teal-text font-label text-xs sm:text-sm font-bold hover:bg-secondary-soft transition-all shadow-2xs">
+      <div class="flex items-center gap-2 sm:gap-2.5 shrink-0">
+        <a href="index.html" aria-label="Lihat Katalog" class="inline-flex items-center gap-1.5 px-2.5 sm:px-3.5 py-2 rounded-lg border border-info-teal bg-surface text-info-teal-text font-label text-xs sm:text-sm font-bold hover:bg-secondary-soft transition-all shadow-2xs">
           <span class="material-symbols-outlined text-base sm:text-lg">visibility</span>
-          <span class="hidden sm:inline">Lihat</span> Katalog
+          <span class="hidden sm:inline">Lihat Katalog</span>
         </a>
-        <a href="index.html" title="Keluar dari Admin" class="inline-flex items-center justify-center w-9 h-9 rounded-lg border border-outline-subtle bg-surface text-on-surface-muted hover:text-red-600 hover:border-red-300 transition-colors">
+        <a href="index.html" onclick="event.preventDefault(); handleLogout()" title="Keluar dari Admin" aria-label="Keluar dari Admin" class="inline-flex items-center justify-center w-9 h-9 rounded-lg border border-outline-subtle bg-surface text-on-surface-muted hover:text-red-600 hover:border-red-300 transition-colors">
           <span class="material-symbols-outlined text-lg">logout</span>
         </a>
       </div>
@@ -102,43 +86,43 @@
   </header>
 
   <!-- Main Container -->
-  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col gap-6">
+  <main id="admin-main" class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col gap-6">
 
     <!-- 3 Stat Cards -->
-    <section aria-label="Ringkasan Statistik" class="grid grid-cols-1 sm:grid-cols-3 gap-4 lg:gap-6">
+    <section aria-label="Ringkasan Statistik" class="grid grid-cols-3 gap-2.5 sm:gap-4 lg:gap-6">
       
       <!-- Total Koleksi -->
-      <article class="bg-surface border border-outline-subtle rounded-xl p-5 flex items-center justify-between shadow-2xs">
+      <article class="bg-surface border border-outline-subtle rounded-xl p-3 sm:p-5 flex items-center justify-between shadow-2xs">
         <div class="flex flex-col gap-1">
-          <span class="font-label text-xs font-bold text-on-surface-muted uppercase tracking-wider">Total Buku</span>
-          <span id="stat-total-stock" class="font-headline text-3xl font-bold text-info-teal-text tabular-nums">0</span>
-          <span id="stat-total-titles" class="font-body text-xs text-on-surface-muted">0 judul terdaftar</span>
+          <span class="font-label text-[10px] sm:text-xs font-bold text-on-surface-muted uppercase tracking-wider leading-tight">Total Buku</span>
+          <span id="stat-total-stock" class="font-headline text-2xl sm:text-3xl font-bold text-info-teal-text tabular-nums">0</span>
+          <span id="stat-total-titles" class="hidden sm:block font-body text-xs text-on-surface-muted">0 judul terdaftar</span>
         </div>
-        <div class="w-12 h-12 rounded-xl bg-secondary-soft text-info-teal-text flex items-center justify-center shrink-0">
+        <div class="hidden sm:flex w-12 h-12 rounded-xl bg-secondary-soft text-info-teal-text flex items-center justify-center shrink-0">
           <span class="material-symbols-outlined text-2xl font-bold">auto_stories</span>
         </div>
       </article>
 
       <!-- Sedang Dipinjam -->
-      <article class="bg-surface border border-outline-subtle rounded-xl p-5 flex items-center justify-between shadow-2xs">
+      <article class="bg-surface border border-outline-subtle rounded-xl p-3 sm:p-5 flex items-center justify-between shadow-2xs">
         <div class="flex flex-col gap-1">
-          <span class="font-label text-xs font-bold text-on-surface-muted uppercase tracking-wider">Sedang Dipinjam</span>
-          <span id="stat-active-loans" class="font-headline text-3xl font-bold text-on-tertiary tabular-nums">0</span>
-          <span class="font-body text-xs text-on-surface-muted">Peminjaman aktif</span>
+          <span class="font-label text-[10px] sm:text-xs font-bold text-on-surface-muted uppercase tracking-wider leading-tight">Sedang Dipinjam</span>
+          <span id="stat-active-loans" class="font-headline text-2xl sm:text-3xl font-bold text-on-tertiary tabular-nums">0</span>
+          <span class="hidden sm:block font-body text-xs text-on-surface-muted">Peminjaman aktif</span>
         </div>
-        <div class="w-12 h-12 rounded-xl bg-warm-yellow text-on-tertiary flex items-center justify-center shrink-0">
+        <div class="hidden sm:flex w-12 h-12 rounded-xl bg-warm-yellow text-on-tertiary flex items-center justify-center shrink-0">
           <span class="material-symbols-outlined text-2xl font-bold">pending_actions</span>
         </div>
       </article>
 
       <!-- Buku Tersedia -->
-      <article class="bg-surface border border-outline-subtle rounded-xl p-5 flex items-center justify-between shadow-2xs">
+      <article class="bg-surface border border-outline-subtle rounded-xl p-3 sm:p-5 flex items-center justify-between shadow-2xs">
         <div class="flex flex-col gap-1">
-          <span class="font-label text-xs font-bold text-on-surface-muted uppercase tracking-wider">Buku Tersedia</span>
-          <span id="stat-avail-stock" class="font-headline text-3xl font-bold text-forest-green tabular-nums">0</span>
-          <span class="font-body text-xs text-on-surface-muted">Siap dipinjam</span>
+          <span class="font-label text-[10px] sm:text-xs font-bold text-on-surface-muted uppercase tracking-wider leading-tight">Buku Tersedia</span>
+          <span id="stat-avail-stock" class="font-headline text-2xl sm:text-3xl font-bold text-forest-green tabular-nums">0</span>
+          <span class="hidden sm:block font-body text-xs text-on-surface-muted">Siap dipinjam</span>
         </div>
-        <div class="w-12 h-12 rounded-xl bg-mint-green text-forest-green-dark flex items-center justify-center shrink-0">
+        <div class="hidden sm:flex w-12 h-12 rounded-xl bg-mint-green text-forest-green-dark flex items-center justify-center shrink-0">
           <span class="material-symbols-outlined text-2xl font-bold">check_circle</span>
         </div>
       </article>
@@ -146,18 +130,18 @@
 
     <!-- Admin Navigation Tabs -->
     <nav class="flex items-center gap-2 border-b border-outline-subtle pb-3">
-      <button type="button" data-admin-tab="peminjam" class="admin-tab active-tab px-5 py-2 rounded-full font-label text-xs sm:text-sm font-bold transition-all cursor-pointer bg-primary text-on-primary">
+      <button type="button" data-admin-tab="peminjam" class="admin-tab active-tab px-4 sm:px-5 py-2 rounded-full font-label text-xs sm:text-sm font-bold transition-all cursor-pointer bg-primary text-on-primary">
         <span class="flex items-center gap-1.5">
           <span class="material-symbols-outlined text-base">group</span>
-          <span>Data Peminjam</span>
-          <span id="badge-loans-count" class="ml-1 px-2 py-0.2 rounded-full bg-mint-green text-forest-green-dark text-[11px] font-bold">0</span>
+          <span><span class="hidden sm:inline">Data </span>Peminjam</span>
+          <span id="badge-loans-count" class="ml-1 px-2 py-0.5 rounded-full bg-mint-green text-forest-green-dark text-[11px] font-bold">0</span>
         </span>
       </button>
 
-      <button type="button" data-admin-tab="kelola" class="admin-tab px-5 py-2 rounded-full font-label text-xs sm:text-sm font-bold transition-all cursor-pointer bg-surface border border-outline-subtle text-on-surface-muted hover:bg-surface-muted">
+      <button type="button" data-admin-tab="kelola" class="admin-tab px-4 sm:px-5 py-2 rounded-full font-label text-xs sm:text-sm font-bold transition-all cursor-pointer bg-surface border border-outline-subtle text-on-surface-muted hover:bg-surface-muted">
         <span class="flex items-center gap-1.5">
           <span class="material-symbols-outlined text-base">library_books</span>
-          <span>Kelola & Tambah Buku</span>
+          <span>Kelola<span class="hidden sm:inline"> & Tambah</span> Buku</span>
         </span>
       </button>
     </nav>
@@ -165,21 +149,29 @@
     <!-- ================= TAB 1: DATA PEMINJAM ================= -->
     <section id="panel-peminjam" class="flex flex-col gap-4">
       <div class="bg-surface border border-outline-subtle rounded-2xl overflow-hidden shadow-2xs">
-        <header class="p-5 border-b border-outline-subtle flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <header class="p-5 border-b border-outline-subtle flex flex-col gap-4">
           <div>
             <h2 class="font-headline text-xl font-bold text-forest-green">Daftar Pengajuan & Peminjaman Buku</h2>
             <p class="font-body text-xs sm:text-sm text-on-surface-muted">Pantau status peminjam dan verifikasi pengembalian buku</p>
           </div>
 
-          <!-- Filter status pinjaman -->
-          <div class="flex items-center gap-2">
-            <span class="text-xs text-on-surface-muted font-bold">Status:</span>
-            <select id="loan-status-filter" onchange="renderBorrowers()" class="px-3 py-1.5 rounded-lg bg-surface border border-outline-subtle text-xs font-bold text-on-surface focus:border-primary outline-none">
+          <!-- Filter peminjaman -->
+          <div class="grid grid-cols-2 lg:grid-cols-5 gap-2 w-full">
+            <input id="loan-search" type="search" oninput="renderBorrowers()" placeholder="Cari nama / judul..." aria-label="Cari nama atau judul" class="col-span-2 lg:col-span-1 px-3 py-1.5 rounded-lg bg-surface border border-outline-subtle text-xs text-on-surface focus:border-primary outline-none">
+            <input id="loan-month" type="month" onchange="renderBorrowers()" aria-label="Filter bulan" class="px-3 py-1.5 rounded-lg bg-surface border border-outline-subtle text-xs font-bold text-on-surface focus:border-primary outline-none">
+            <select id="loan-category" onchange="renderBorrowers()" aria-label="Filter kategori" class="pl-3 pr-8 py-1.5 rounded-lg bg-surface border border-outline-subtle text-xs font-bold text-on-surface focus:border-primary outline-none">
+              <option value="">Semua Kategori</option>
+            </select>
+            <select id="loan-status-filter" onchange="renderBorrowers()" aria-label="Filter status" class="pl-3 pr-8 py-1.5 rounded-lg bg-surface border border-outline-subtle text-xs font-bold text-on-surface focus:border-primary outline-none">
               <option value="all">Semua Status</option>
               <option value="active">Aktif Dipinjam</option>
               <option value="returned">Sudah Selesai</option>
             </select>
+            <button type="button" onclick="resetLoanFilters()" class="px-3 py-1.5 rounded-lg border border-outline-subtle bg-surface text-xs font-bold text-on-surface-muted hover:bg-surface-subtle cursor-pointer inline-flex items-center justify-center gap-1">
+              <span class="material-symbols-outlined text-base">restart_alt</span>Reset
+            </button>
           </div>
+          <p id="loan-summary" class="text-xs text-on-surface-muted"></p>
         </header>
 
         <!-- Desktop Table (Hidden on Mobile) -->
@@ -190,7 +182,7 @@
                 <th class="px-5 py-3.5">Nama Peminjam</th>
                 <th class="px-5 py-3.5">Kontak</th>
                 <th class="px-5 py-3.5">Alamat</th>
-                <th class="px-5 py-3.5">Buku yang Dipinjam</th>
+                <th class="px-5 py-3.5">Buku</th>
                 <th class="px-5 py-3.5">Tgl Pinjam</th>
                 <th class="px-5 py-3.5">Status</th>
                 <th class="px-5 py-3.5 text-center">Aksi</th>
@@ -233,30 +225,46 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <label class="flex flex-col gap-1.5">
                 <span class="font-label text-xs font-bold text-on-surface">Judul Buku <span class="text-red-500">*</span></span>
-                <input type="text" id="new-title" required placeholder="Contoh: Sang Pemimpi" 
+                <input type="text" id="new-title" required placeholder="Contoh: Sang Pemimpi"
                   class="w-full px-3.5 py-2.5 rounded-lg bg-surface border border-outline-subtle text-sm text-on-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none">
               </label>
-
               <label class="flex flex-col gap-1.5">
                 <span class="font-label text-xs font-bold text-on-surface">Penulis <span class="text-red-500">*</span></span>
-                <input type="text" id="new-author" required placeholder="Contoh: Andrea Hirata" 
+                <input type="text" id="new-author" required placeholder="Contoh: Andrea Hirata"
                   class="w-full px-3.5 py-2.5 rounded-lg bg-surface border border-outline-subtle text-sm text-on-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none">
               </label>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <label class="flex flex-col gap-1.5">
-                <span class="font-label text-xs font-bold text-on-surface">Jumlah Stok Awal <span class="text-red-500">*</span></span>
-                <input type="number" id="new-stock" min="1" value="2" required 
+                <span class="font-label text-xs font-bold text-on-surface">Kategori <span class="text-red-500">*</span></span>
+                <select id="new-category" required
+                  class="w-full pl-3.5 pr-8 py-2.5 rounded-lg bg-surface border border-outline-subtle text-sm text-on-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none">
+                </select>
+              </label>
+              <label class="flex flex-col gap-1.5">
+                <span class="font-label text-xs font-bold text-on-surface">ISBN (Opsional)</span>
+                <input type="text" id="new-isbn" inputmode="numeric" pattern="[0-9Xx\- ]{10,17}" title="10 atau 13 digit, boleh pakai tanda -" placeholder="978-602-..."
                   class="w-full px-3.5 py-2.5 rounded-lg bg-surface border border-outline-subtle text-sm text-on-surface tabular-nums focus:border-primary focus:ring-1 focus:ring-primary outline-none">
               </label>
-
               <label class="flex flex-col gap-1.5">
-                <span class="font-label text-xs font-bold text-on-surface">URL Gambar Sampul (Opsional)</span>
-                <input type="url" id="new-cover-url" placeholder="https://example.com/cover.jpg" 
-                  class="w-full px-3.5 py-2.5 rounded-lg bg-surface border border-outline-subtle text-sm text-on-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none">
+                <span class="font-label text-xs font-bold text-on-surface">Jumlah Stok <span class="text-red-500">*</span></span>
+                <input type="number" id="new-stock" min="1" value="2" required
+                  class="w-full px-3.5 py-2.5 rounded-lg bg-surface border border-outline-subtle text-sm text-on-surface tabular-nums focus:border-primary focus:ring-1 focus:ring-primary outline-none">
               </label>
             </div>
+
+            <label class="flex flex-col gap-1.5">
+              <span class="font-label text-xs font-bold text-on-surface">Sinopsis</span>
+              <textarea id="new-synopsis" rows="3" maxlength="1000" placeholder="Ringkasan singkat isi buku (tampil di detail buku katalog)..."
+                class="w-full px-3.5 py-2.5 rounded-lg bg-surface border border-outline-subtle text-sm text-on-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none"></textarea>
+            </label>
+
+            <label class="flex flex-col gap-1.5">
+              <span class="font-label text-xs font-bold text-on-surface">URL Gambar Sampul (Opsional)</span>
+              <input type="url" id="new-cover-url" placeholder="https://example.com/cover.jpg"
+                class="w-full px-3.5 py-2.5 rounded-lg bg-surface border border-outline-subtle text-sm text-on-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none">
+            </label>
 
             <div>
               <button type="submit" class="inline-flex items-center gap-2 px-6 py-2.5 rounded-lg bg-primary text-on-primary font-label text-sm font-bold hover:opacity-90 transition-opacity cursor-pointer shadow-xs">
@@ -273,9 +281,9 @@
               <div id="new-cover-preview-wrapper" class="flex flex-col items-center">
                 <span class="material-symbols-outlined text-4xl text-info-teal-text">add_photo_alternate</span>
                 <span id="new-cover-filename" class="font-label text-xs text-on-surface font-semibold mt-1">Pilih file gambar sampul</span>
-                <span class="text-[11px] text-on-surface-muted">Format JPG/PNG (Aspek 3:4)</span>
+                <span class="text-[11px] text-on-surface-muted">JPG/PNG/WEBP, maks 2MB (Aspek 3:4)</span>
               </div>
-              <input type="file" id="new-cover-file" accept="image/*" onchange="handleCoverFileSelect(event)" class="sr-only">
+              <input type="file" id="new-cover-file" accept="image/jpeg,image/png,image/webp" onchange="handleCoverFileSelect(event)" class="sr-only">
             </label>
           </div>
         </form>
@@ -300,6 +308,23 @@
     </section>
   </main>
 
+  <!-- ================= MODAL RIWAYAT (per buku / per orang) ================= -->
+  <dialog id="history-modal" class="bg-surface border border-outline-subtle rounded-2xl max-w-lg w-[calc(100%-2rem)] p-6 shadow-2xl backdrop:bg-on-surface/50 backdrop:backdrop-blur-xs">
+    <div class="flex flex-col gap-4 max-h-[80vh]">
+      <header class="flex items-start justify-between gap-3 border-b border-outline-subtle pb-3">
+        <div class="min-w-0">
+          <p id="history-kicker" class="text-[11px] font-bold uppercase tracking-wider text-on-surface-muted">Riwayat</p>
+          <h3 id="history-title" class="font-headline text-2xl text-forest-green leading-tight truncate">-</h3>
+          <p id="history-summary" class="text-xs text-on-surface-muted mt-0.5"></p>
+        </div>
+        <button type="button" onclick="historyModal.close()" aria-label="Tutup" class="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-muted hover:bg-surface-muted cursor-pointer transition-colors shrink-0">
+          <span class="material-symbols-outlined text-xl">close</span>
+        </button>
+      </header>
+      <div id="history-list" class="flex flex-col gap-2 overflow-y-auto"></div>
+    </div>
+  </dialog>
+
   <!-- ================= MODAL PRATINJAU FOTO IDENTITAS ================= -->
   <dialog id="photo-modal" class="bg-surface border border-outline-subtle rounded-2xl max-w-md w-[calc(100%-2rem)] p-6 shadow-2xl backdrop:bg-on-surface/50 backdrop:backdrop-blur-xs">
     <div class="flex flex-col gap-4">
@@ -308,7 +333,7 @@
           <span class="material-symbols-outlined text-info-teal-text text-xl">badge</span>
           <h3 class="font-headline text-lg font-bold text-forest-green">Bukti Identitas Peminjam</h3>
         </div>
-        <button type="button" onclick="closePhotoModal()" class="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-muted hover:bg-surface-muted cursor-pointer transition-colors">
+        <button type="button" onclick="closePhotoModal()" aria-label="Tutup" class="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-muted hover:bg-surface-muted cursor-pointer transition-colors">
           <span class="material-symbols-outlined text-xl">close</span>
         </button>
       </header>
@@ -326,14 +351,18 @@
   </dialog>
 
   <!-- JS Logic -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
   <script src="js/store.js"></script>
   <script>
-    let uploadedCoverBase64 = null;
+    const Store = window.PerpusStore;
+    let BOOKS = [];
+    let LOANS = [];
+    let uploadedCover = null;
     const photoModal = document.getElementById('photo-modal');
 
     function renderDashboardStats() {
-      const books = window.PerpusStore.getBooks();
-      const loans = window.PerpusStore.getLoans();
+      const books = BOOKS;
+      const loans = LOANS;
 
       const totalAvail = books.reduce((sum, b) => sum + Number(b.stock_available), 0);
       const activeLoans = loans.filter(l => l.status === 'active').length;
@@ -348,9 +377,29 @@
     }
 
     function renderBorrowers() {
-      const loans = window.PerpusStore.getLoans();
-      const filter = document.getElementById('loan-status-filter').value;
-      const filteredLoans = loans.filter(l => filter === 'all' || l.status === filter);
+      const { esc, fmtDate } = window.PerpusStore;
+      const loans = LOANS;
+      const books = BOOKS;
+      const catOf = (l) => (books.find(b => b.id === l.book_id) || {}).category || '-';
+
+      const status = document.getElementById('loan-status-filter').value;
+      const month = document.getElementById('loan-month').value;          // 'YYYY-MM' atau ''
+      const category = document.getElementById('loan-category').value;
+      const q = document.getElementById('loan-search').value.trim().toLowerCase();
+
+      const filteredLoans = loans.filter(l =>
+        (status === 'all' || l.status === status) &&
+        (!month || (l.borrowed_at || '').startsWith(month)) &&
+        (!category || catOf(l) === category) &&
+        (!q || l.borrower_name.toLowerCase().includes(q) || l.book_title.toLowerCase().includes(q))
+      );
+
+      // Ringkasan hasil filter
+      const people = new Set(filteredLoans.map(l => l.borrower_email)).size;
+      const titles = new Set(filteredLoans.map(l => l.book_id)).size;
+      const monthLabel = month ? new Date(month + '-01T00:00:00').toLocaleDateString('id-ID', { month: 'long', year: 'numeric' }) + ': ' : '';
+      document.getElementById('loan-summary').innerHTML =
+        `${esc(monthLabel)}<strong class="text-on-surface">${filteredLoans.length}</strong> peminjaman · <strong class="text-on-surface">${people}</strong> orang · <strong class="text-on-surface">${titles}</strong> judul`;
 
       const desktopTbody = document.getElementById('desktop-loans-tbody');
       const mobileContainer = document.getElementById('mobile-loans-container');
@@ -364,149 +413,209 @@
       }
       emptyState.classList.add('hidden');
 
+      const badge = (l) => l.status === 'active'
+        ? '<span class="inline-flex items-center px-2.5 py-1 rounded-full bg-warm-yellow text-on-tertiary font-bold text-[11px]">Aktif Dipinjam</span>'
+        : '<span class="inline-flex items-center px-2.5 py-1 rounded-full bg-mint-green text-forest-green-dark font-bold text-[11px]">Selesai</span>';
+      const personBtn = (l, cls) => `<button type="button" onclick="openPersonHistory('${esc(l.borrower_email)}')" class="${cls} text-left hover:underline underline-offset-2 cursor-pointer">${esc(l.borrower_name)}</button>`;
+      const bookBtn = (l, cls) => `<button type="button" onclick="openBookHistory('${esc(l.book_id)}')" class="${cls} text-left hover:underline underline-offset-2 cursor-pointer">${esc(l.book_title)}</button>`;
+
       // Desktop Table
-      desktopTbody.innerHTML = filteredLoans.map(loan => {
-        const isActive = loan.status === 'active';
-        const statusBadge = isActive
-          ? `<span class="inline-flex items-center px-2.5 py-1 rounded-full bg-warm-yellow text-on-tertiary font-bold text-[11px]">Aktif Dipinjam</span>`
-          : `<span class="inline-flex items-center px-2.5 py-1 rounded-full bg-mint-green text-forest-green-dark font-bold text-[11px]">Selesai</span>`;
-
+      desktopTbody.innerHTML = filteredLoans.map(l => {
+        const isActive = l.status === 'active';
         const returnBtn = isActive
-          ? `<button type="button" onclick="handleReturn('${loan.id}')" class="px-3 py-1.5 rounded-lg bg-primary text-on-primary font-bold text-xs hover:opacity-90 transition-opacity cursor-pointer shadow-2xs">Tandai Kembali</button>`
-          : `<span class="px-2 py-1 text-xs text-on-surface-muted italic">Dikembalikan (${loan.returned_at || '-'})</span>`;
-
-        const photoBtn = `<button type="button" onclick="viewPhoto('${loan.borrower_name}', '${loan.id_photo_url || ''}')" class="px-2.5 py-1.5 rounded-lg border border-info-teal text-info-teal-text font-bold text-xs hover:bg-secondary-soft transition-colors cursor-pointer">Foto ID</button>`;
-
+          ? `<button type="button" onclick="handleReturn('${esc(l.id)}')" class="px-3 py-1.5 rounded-lg bg-primary text-on-primary font-bold text-xs hover:opacity-90 transition-opacity cursor-pointer shadow-2xs">Tandai Kembali</button>`
+          : `<span class="px-2 py-1 text-xs text-on-surface-muted italic">Kembali ${fmtDate(l.returned_at)}</span>`;
         return `
           <tr class="hover:bg-surface-subtle/70 transition-colors">
-            <td class="px-5 py-4 font-bold text-on-surface whitespace-nowrap">${loan.borrower_name}</td>
+            <td class="px-5 py-4 whitespace-nowrap">${personBtn(l, 'font-bold text-on-surface')}</td>
             <td class="px-5 py-4">
               <div class="flex flex-col">
-                <span class="text-on-surface">${loan.borrower_email}</span>
-                <span class="font-mono text-[11px] text-info-teal-text">${loan.borrower_wa}</span>
+                <span class="text-on-surface">${esc(l.borrower_email)}</span>
+                <span class="font-mono text-[11px] text-info-teal-text">${esc(l.borrower_wa)}</span>
               </div>
             </td>
-            <td class="px-5 py-4 max-w-xs text-on-surface-muted truncate" title="${loan.borrower_address}">${loan.borrower_address}</td>
-            <td class="px-5 py-4 font-bold text-forest-green whitespace-nowrap">${loan.book_title}</td>
-            <td class="px-5 py-4 text-on-surface-muted whitespace-nowrap tabular-nums">${loan.borrowed_at}</td>
-            <td class="px-5 py-4 whitespace-nowrap">${statusBadge}</td>
+            <td class="px-5 py-4 max-w-xs text-on-surface-muted truncate" title="${esc(l.borrower_address)}">${esc(l.borrower_address)}</td>
+            <td class="px-5 py-4 whitespace-nowrap">
+              <div class="flex flex-col">
+                ${bookBtn(l, 'font-bold text-forest-green')}
+                <span class="text-[11px] text-on-surface-muted">${esc(catOf(l))}</span>
+              </div>
+            </td>
+            <td class="px-5 py-4 text-on-surface-muted whitespace-nowrap tabular-nums">${fmtDate(l.borrowed_at)}</td>
+            <td class="px-5 py-4 whitespace-nowrap">${badge(l)}</td>
             <td class="px-5 py-4 whitespace-nowrap">
               <div class="flex items-center justify-center gap-2">
                 ${returnBtn}
-                ${photoBtn}
+                <button type="button" onclick="viewPhoto('${esc(l.id)}')" class="px-2.5 py-1.5 rounded-lg border border-info-teal text-info-teal-text font-bold text-xs hover:bg-secondary-soft transition-colors cursor-pointer">Foto ID</button>
               </div>
             </td>
-          </tr>
-        `;
+          </tr>`;
       }).join('');
 
       // Mobile Stacked Cards
-      mobileContainer.innerHTML = filteredLoans.map(loan => {
-        const isActive = loan.status === 'active';
-        const statusBadge = isActive
-          ? `<span class="px-2.5 py-1 rounded-full bg-warm-yellow text-on-tertiary font-bold text-[11px]">Aktif Dipinjam</span>`
-          : `<span class="px-2.5 py-1 rounded-full bg-mint-green text-forest-green-dark font-bold text-[11px]">Selesai</span>`;
-
+      mobileContainer.innerHTML = filteredLoans.map(l => {
+        const isActive = l.status === 'active';
         return `
           <article class="bg-surface border border-outline-subtle rounded-xl p-4 flex flex-col gap-3 shadow-2xs">
             <div class="flex items-start justify-between gap-2">
-              <div>
-                <h3 class="font-title text-base font-bold text-on-surface">${loan.borrower_name}</h3>
-                <p class="font-label text-sm font-bold text-forest-green">${loan.book_title}</p>
+              <div class="flex flex-col min-w-0">
+                ${personBtn(l, 'font-title text-base text-on-surface')}
+                ${bookBtn(l, 'font-label text-sm font-bold text-forest-green')}
+                <span class="text-[11px] text-on-surface-muted">${esc(catOf(l))}</span>
               </div>
-              ${statusBadge}
+              ${badge(l)}
             </div>
-
             <div class="text-xs text-on-surface-muted flex flex-col gap-1 border-t border-outline-subtle pt-2.5">
-              <p>${loan.borrower_email} &bull; <span class="font-mono text-info-teal-text">${loan.borrower_wa}</span></p>
-              <p class="text-balance">${loan.borrower_address}</p>
-              <p class="text-[11px] text-info-teal-text font-bold">Tanggal: ${loan.borrowed_at}</p>
+              <p>${esc(l.borrower_email)} &bull; <span class="font-mono text-info-teal-text">${esc(l.borrower_wa)}</span></p>
+              <p class="text-balance">${esc(l.borrower_address)}</p>
+              <p class="text-[11px] text-info-teal-text font-bold">Pinjam: ${fmtDate(l.borrowed_at)}${l.returned_at ? ' · Kembali: ' + fmtDate(l.returned_at) : ''}</p>
             </div>
-
             <div class="grid grid-cols-2 gap-2 pt-1 border-t border-outline-subtle">
-              ${
-                isActive 
-                  ? `<button type="button" onclick="handleReturn('${loan.id}')" class="w-full py-2 rounded-lg bg-primary text-on-primary font-bold text-xs text-center cursor-pointer">Tandai Kembali</button>`
-                  : `<button type="button" disabled class="w-full py-2 rounded-lg bg-disabled-surface text-on-disabled font-bold text-xs text-center cursor-not-allowed">Selesai</button>`
-              }
-              <button type="button" onclick="viewPhoto('${loan.borrower_name}', '${loan.id_photo_url || ''}')" class="w-full py-2 rounded-lg border border-info-teal text-info-teal-text font-bold text-xs text-center hover:bg-secondary-soft cursor-pointer">Lihat ID</button>
+              ${isActive
+                ? `<button type="button" onclick="handleReturn('${esc(l.id)}')" class="w-full py-2 rounded-lg bg-primary text-on-primary font-bold text-xs text-center cursor-pointer">Tandai Kembali</button>`
+                : `<button type="button" disabled class="w-full py-2 rounded-lg bg-disabled-surface text-on-disabled font-bold text-xs text-center cursor-not-allowed">Selesai</button>`}
+              <button type="button" onclick="viewPhoto('${esc(l.id)}')" class="w-full py-2 rounded-lg border border-info-teal text-info-teal-text font-bold text-xs text-center hover:bg-secondary-soft cursor-pointer">Lihat ID</button>
             </div>
-          </article>
-        `;
+          </article>`;
       }).join('');
     }
 
+    function resetLoanFilters() {
+      ['loan-search', 'loan-month', 'loan-category'].forEach(id => document.getElementById(id).value = '');
+      document.getElementById('loan-status-filter').value = 'all';
+      renderBorrowers();
+    }
+
+    // ===== Riwayat per buku / per orang =====
+    const historyModal = document.getElementById('history-modal');
+
+    function showHistory(kicker, title, summary, rows) {
+      const { esc, fmtDate } = window.PerpusStore;
+      document.getElementById('history-kicker').textContent = kicker;
+      document.getElementById('history-title').textContent = title;
+      document.getElementById('history-summary').textContent = summary;
+      document.getElementById('history-list').innerHTML = rows.length ? rows.map(r => `
+        <div class="bg-surface-subtle border border-outline-subtle rounded-lg p-3 flex items-center justify-between gap-3">
+          <div class="min-w-0">
+            <p class="font-bold text-sm text-on-surface truncate">${esc(r.main)}</p>
+            <p class="text-[11px] text-on-surface-muted">Pinjam ${fmtDate(r.loan.borrowed_at)}${r.loan.returned_at ? ' · Kembali ' + fmtDate(r.loan.returned_at) : ''}</p>
+          </div>
+          <span class="shrink-0 px-2.5 py-1 rounded-full text-[11px] font-bold ${r.loan.status === 'active' ? 'bg-warm-yellow text-on-tertiary' : 'bg-mint-green text-forest-green-dark'}">${r.loan.status === 'active' ? 'Dipinjam' : 'Selesai'}</span>
+        </div>`).join('')
+        : '<p class="text-sm text-on-surface-muted text-center py-6">Belum pernah dipinjam.</p>';
+      historyModal.showModal();
+    }
+
+    function openBookHistory(bookId) {
+      const book = BOOKS.find(b => b.id === bookId);
+      const loans = LOANS.filter(l => l.book_id === bookId);
+      const people = new Set(loans.map(l => l.borrower_email)).size;
+      showHistory('Riwayat Buku', book ? book.title : (loans[0] || {}).book_title || 'Buku',
+        `Dipinjam ${loans.length}× oleh ${people} orang`,
+        loans.map(l => ({ main: l.borrower_name, loan: l })));
+    }
+
+    function openPersonHistory(email) {
+      const loans = LOANS.filter(l => l.borrower_email === email);
+      const titles = new Set(loans.map(l => l.book_id)).size;
+      const active = loans.filter(l => l.status === 'active').length;
+      showHistory('Riwayat Peminjam', loans[0] ? loans[0].borrower_name : email,
+        `${loans.length} peminjaman · ${titles} judul · ${active} masih dipinjam`,
+        loans.map(l => ({ main: l.book_title, loan: l })));
+    }
+
     function renderBooksInventory() {
-      const books = window.PerpusStore.getBooks();
+      const esc = Store.esc;
+      const books = BOOKS;
+      const loans = LOANS;
       const list = document.getElementById('admin-books-list');
 
       list.innerHTML = books.map(book => {
+        const count = loans.filter(l => l.book_id === book.id).length;
         return `
           <div class="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-surface-subtle/50 transition-colors">
             <div class="flex items-center gap-3.5 min-w-0">
-              <img src="${book.cover_url}" alt="Sampul" class="w-12 aspect-[3/4] object-cover rounded-md border border-outline-subtle shrink-0">
+              <img src="${esc(book.cover_url)}" alt="Sampul" class="w-12 aspect-[3/4] object-cover rounded-md border border-outline-subtle shrink-0">
               <div class="flex flex-col min-w-0">
-                <h4 class="font-title text-sm sm:text-base font-bold text-forest-green truncate">${book.title}</h4>
-                <p class="font-body text-xs text-on-surface-muted truncate">${book.author}</p>
-                <div class="flex items-center gap-2 mt-1">
-                  <span class="font-label text-xs font-bold text-info-teal-text tabular-nums">
-                    Tersedia: ${book.stock_available} dari ${book.stock_total} buku
-                  </span>
+                <h4 class="font-title text-sm sm:text-base font-bold text-forest-green truncate">${esc(book.title)}</h4>
+                <p class="font-body text-xs text-on-surface-muted truncate">${esc(book.author)}</p>
+                <div class="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-1 text-[11px]">
+                  <span class="font-bold text-info-teal-text">${esc(book.category || 'Lainnya')}</span>
+                  ${book.isbn ? `<span class="text-on-surface-muted tabular-nums">ISBN ${esc(book.isbn)}</span>` : ''}
+                  <span class="font-bold text-on-surface tabular-nums">Tersedia ${book.stock_available}/${book.stock_total}</span>
                 </div>
               </div>
             </div>
 
-            <div class="flex items-center justify-between sm:justify-end gap-3 shrink-0">
-              <!-- Stock Stepper -->
+            <div class="flex items-center justify-between sm:justify-end gap-2.5 shrink-0">
+              <button type="button" onclick="openBookHistory('${esc(book.id)}')" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-outline-subtle text-xs font-bold text-on-surface hover:bg-surface-subtle cursor-pointer">
+                <span class="material-symbols-outlined text-base">history</span>Riwayat (${count})
+              </button>
+
               <div class="flex items-center gap-1.5 bg-surface-subtle border border-outline-subtle rounded-lg p-1">
-                <button type="button" onclick="updateStock('${book.id}', -1)" title="Kurangi stok" class="w-7 h-7 rounded flex items-center justify-center hover:bg-surface-muted text-on-surface cursor-pointer">
+                <button type="button" onclick="updateStock('${esc(book.id)}', -1)" title="Kurangi stok" aria-label="Kurangi stok" class="w-7 h-7 rounded flex items-center justify-center hover:bg-surface-muted text-on-surface cursor-pointer">
                   <span class="material-symbols-outlined text-base">remove</span>
                 </button>
                 <span class="w-8 text-center text-xs font-bold tabular-nums text-forest-green">${book.stock_available}</span>
-                <button type="button" onclick="updateStock('${book.id}', 1)" title="Tambah stok" class="w-7 h-7 rounded flex items-center justify-center hover:bg-surface-muted text-on-surface cursor-pointer">
+                <button type="button" onclick="updateStock('${esc(book.id)}', 1)" title="Tambah stok" aria-label="Tambah stok" class="w-7 h-7 rounded flex items-center justify-center hover:bg-surface-muted text-on-surface cursor-pointer">
                   <span class="material-symbols-outlined text-base">add</span>
                 </button>
               </div>
 
-              <!-- Delete Button -->
-              <button type="button" onclick="handleDeleteBook('${book.id}', '${book.title.replace(/'/g, "\\'")}')" title="Hapus buku dari koleksi" class="w-9 h-9 rounded-lg border border-outline-subtle text-on-surface-muted hover:text-red-600 hover:border-red-300 hover:bg-red-50 flex items-center justify-center transition-colors cursor-pointer">
+              <button type="button" onclick="handleDeleteBook('${esc(book.id)}')" title="Hapus buku dari koleksi" aria-label="Hapus buku" class="w-9 h-9 rounded-lg border border-outline-subtle text-on-surface-muted hover:text-red-600 hover:border-red-300 hover:bg-red-50 flex items-center justify-center transition-colors cursor-pointer">
                 <span class="material-symbols-outlined text-base">delete</span>
               </button>
             </div>
-          </div>
-        `;
+          </div>`;
       }).join('');
     }
 
-    // Actions
-    function handleReturn(loanId) {
-      const loan = window.PerpusStore.returnBook(loanId);
-      if (loan) {
-        renderDashboardStats();
-        renderBorrowers();
-        renderBooksInventory();
-        window.PerpusStore.showToast(`Buku "${loan.book_title}" berhasil ditandai kembali!`);
+    // Ambil ulang semua data lalu render
+    async function loadAll() {
+      try {
+        [BOOKS, LOANS] = await Promise.all([Store.getBooks(), Store.getLoans()]);
+      } catch (err) {
+        Store.showToast('Gagal memuat data: ' + err.message, 'error');
+      }
+      renderDashboardStats();
+      renderBorrowers();
+      renderBooksInventory();
+    }
+
+    async function handleReturn(loanId) {
+      try {
+        const loan = await Store.returnBook(loanId);
+        Store.showToast(`Buku "${loan.book_title}" berhasil ditandai kembali!`);
+        await loadAll();
+      } catch (err) {
+        Store.showToast(err.message, 'error');
       }
     }
 
-    function viewPhoto(borrowerName, photoUrl) {
+    async function viewPhoto(loanId) {
+      const esc = Store.esc;
+      const loan = LOANS.find(l => l.id === loanId);
+      if (!loan) return;
       const body = document.getElementById('photo-modal-body');
-      if (photoUrl && photoUrl.length > 5) {
-        body.innerHTML = `
-          <img src="${photoUrl}" alt="Identitas ${borrowerName}" class="max-h-64 object-contain rounded-lg border border-outline-subtle shadow-xs mb-3">
-          <p class="font-title text-sm font-bold text-on-surface">${borrowerName}</p>
-          <p class="text-xs text-on-surface-muted">Foto Identitas Terverifikasi</p>
-        `;
-      } else {
-        body.innerHTML = `
+      const noPhoto = `
           <div class="w-16 h-16 rounded-full bg-secondary-soft text-info-teal-text flex items-center justify-center mb-2">
             <span class="material-symbols-outlined text-3xl">account_box</span>
           </div>
-          <p class="font-title text-sm font-bold text-on-surface">${borrowerName}</p>
-          <p class="text-xs text-on-surface-muted">Peminjam tidak mengunggah foto identitas opsional.</p>
-        `;
-      }
+          <p class="font-title text-sm font-bold text-on-surface">${esc(loan.borrower_name)}</p>
+          <p class="text-xs text-on-surface-muted">Peminjam tidak mengunggah foto identitas opsional.</p>`;
+      body.innerHTML = loan.id_photo_path ? '<p class="text-sm text-on-surface-muted">Memuat foto...</p>' : noPhoto;
       photoModal.showModal();
+      if (!loan.id_photo_path) return;
+
+      try {
+        const url = await Store.photoUrl(loan.id_photo_path);   // link sementara 60 detik (bucket privat)
+        body.innerHTML = `
+          <img src="${esc(url)}" alt="Identitas ${esc(loan.borrower_name)}" class="max-h-64 object-contain rounded-lg border border-outline-subtle shadow-xs mb-3">
+          <p class="font-title text-sm font-bold text-on-surface">${esc(loan.borrower_name)}</p>
+          <p class="text-xs text-on-surface-muted">Foto identitas dari peminjam</p>`;
+      } catch (err) {
+        body.innerHTML = `<p class="text-sm text-red-600">Gagal memuat foto: ${esc(err.message)}</p>`;
+      }
     }
 
     function closePhotoModal() {
@@ -515,53 +624,73 @@
 
     function handleCoverFileSelect(e) {
       const file = e.target.files[0];
-      if (file) {
-        document.getElementById('new-cover-filename').textContent = file.name;
-        const reader = new FileReader();
-        reader.onload = (re) => {
-          uploadedCoverBase64 = re.target.result;
-        };
-        reader.readAsDataURL(file);
+      if (!file) return;
+      if (file.size > 2 * 1024 * 1024) {
+        e.target.value = '';
+        uploadedCover = null;
+        document.getElementById('new-cover-filename').textContent = 'Pilih file gambar sampul';
+        Store.showToast('Ukuran sampul maksimal 2MB.', 'error');
+        return;
+      }
+      uploadedCover = file;
+      document.getElementById('new-cover-filename').textContent = file.name;
+    }
+
+    async function handleAddBook(e) {
+      e.preventDefault();
+      const form = e.target;
+      const btn = form.querySelector('[type=submit]');
+      const val = (id) => document.getElementById(id).value.trim();
+      const title = val('new-title');
+
+      btn.disabled = true;
+      try {
+        await Store.addBook({
+          title,
+          author: val('new-author'),
+          category: val('new-category'),
+          isbn: val('new-isbn'),
+          synopsis: val('new-synopsis'),
+          stock: parseInt(val('new-stock'), 10) || 1,
+          cover_url: val('new-cover-url'),
+        }, uploadedCover);
+
+        form.reset();
+        uploadedCover = null;
+        document.getElementById('new-cover-filename').textContent = 'Pilih file gambar sampul';
+        Store.showToast(`Buku "${title}" berhasil ditambahkan!`);
+        await loadAll();
+      } catch (err) {
+        Store.showToast('Gagal menambah buku: ' + err.message, 'error');
+      } finally {
+        btn.disabled = false;
       }
     }
 
-    function handleAddBook(e) {
-      e.preventDefault();
-      const title = document.getElementById('new-title').value.trim();
-      const author = document.getElementById('new-author').value.trim();
-      const stock = parseInt(document.getElementById('new-stock').value, 10) || 1;
-      const urlInput = document.getElementById('new-cover-url').value.trim();
-
-      const cover_url = uploadedCoverBase64 || urlInput || 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&w=600&q=80';
-
-      window.PerpusStore.addBook({
-        title,
-        author,
-        stock,
-        cover_url
-      });
-
-      e.target.reset();
-      uploadedCoverBase64 = null;
-      document.getElementById('new-cover-filename').textContent = 'Pilih file gambar sampul';
-
-      renderDashboardStats();
-      renderBooksInventory();
-      window.PerpusStore.showToast(`Buku "${title}" berhasil ditambahkan!`);
+    async function updateStock(bookId, delta) {
+      try {
+        await Store.updateStock(bookId, delta);
+        await loadAll();
+      } catch (err) {
+        Store.showToast(err.message, 'error');
+      }
     }
 
-    function updateStock(bookId, delta) {
-      window.PerpusStore.updateStock(bookId, delta);
-      renderDashboardStats();
-      renderBooksInventory();
-    }
-
-    function handleDeleteBook(bookId, title) {
-      if (confirm(`Yakin ingin menghapus buku "${title}" dari katalog?`)) {
-        window.PerpusStore.deleteBook(bookId);
-        renderDashboardStats();
-        renderBooksInventory();
-        window.PerpusStore.showToast(`Buku "${title}" dihapus.`);
+    async function handleDeleteBook(bookId) {
+      const book = BOOKS.find(b => b.id === bookId);
+      if (!book) return;
+      const title = book.title;
+      if (book.stock_available < book.stock_total) {
+        Store.showToast(`"${title}" masih ada yang meminjam, tidak bisa dihapus.`, 'error');
+        return;
+      }
+      if (!confirm(`Yakin ingin menghapus buku "${title}" dari katalog?`)) return;
+      try {
+        await Store.deleteBook(bookId);
+        Store.showToast(`Buku "${title}" dihapus.`);
+        await loadAll();
+      } catch (err) {
+        Store.showToast('Gagal menghapus: ' + err.message, 'error');
       }
     }
 
@@ -586,10 +715,52 @@
       });
     });
 
-    // Initial render
-    renderDashboardStats();
-    renderBorrowers();
-    renderBooksInventory();
+    // ===== Gerbang login admin (Supabase Auth + profiles.is_admin) =====
+    async function applyAdminGate() {
+      let user = null;
+      try { user = await Store.getUser(); } catch (err) { /* anggap belum masuk */ }
+      const ok = !!(user && user.is_admin);
+
+      document.getElementById('admin-login').classList.toggle('hidden', ok);
+      document.getElementById('admin-header').classList.toggle('hidden', !ok);
+      document.getElementById('admin-main').classList.toggle('hidden', !ok);
+      document.getElementById('gate-signin').classList.toggle('hidden', !!user);
+      document.getElementById('gate-denied').classList.toggle('hidden', !user || ok);
+      if (user && !ok) document.getElementById('gate-email').textContent = user.email;
+
+      if (ok) await loadAll();
+    }
+
+    async function handleAdminLogin(e) {
+      e.preventDefault();
+      const btn = e.target.querySelector('[type=submit]');
+      btn.disabled = true;
+      try {
+        await Store.signIn(document.getElementById('login-email').value.trim(), document.getElementById('login-password').value);
+        e.target.reset();
+        await applyAdminGate();
+      } catch (err) {
+        Store.showToast(err.message, 'error');
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    async function handleLogout() {
+      await Store.signOut();
+    }
+
+    Store.onAuthChange((event) => {
+      if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') applyAdminGate();
+    });
+
+    // Dropdown kategori (form tambah buku & filter peminjam)
+    const catOptions = Store.CATEGORIES.map(c => `<option value="${Store.esc(c)}">${Store.esc(c)}</option>`).join('');
+    document.getElementById('new-category').innerHTML = '<option value="" disabled selected>Pilih kategori</option>' + catOptions;
+    document.getElementById('loan-category').innerHTML = '<option value="">Semua Kategori</option>' + catOptions;
+
+    // Initial load
+    applyAdminGate();
   </script>
 </body>
 </html>

@@ -3,94 +3,36 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Perpustakaan — Katalog Peminjaman Buku</title>
+  <title>Reading Partner — Katalog Peminjaman Buku</title>
+  <link rel="icon" type="image/png" href="ic_logo.png">
   
   <!-- Tailwind CSS via CDN -->
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-  <script id="tailwind-config">
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          colors: {
-            'forest-green': '#347928',
-            'forest-green-dark': '#163806',
-            'mint-green': '#c0eba6',
-            'warm-yellow': '#f4de40',
-            'info-teal': '#1684a7',
-            'info-teal-text': '#006684',
-            'pure-white': '#ffffff',
-            'primary': '#347928',
-            'on-primary': '#ffffff',
-            'primary-soft': '#c0eba6',
-            'on-primary-soft': '#163806',
-            'secondary': '#1684a7',
-            'on-secondary': '#0D0D0D',
-            'secondary-soft': '#E0F4FF',
-            'tertiary': '#f4de40',
-            'on-tertiary': '#201C00',
-            'surface': '#ffffff',
-            'surface-subtle': '#FAFEF2',
-            'surface-muted': '#EEF2E7',
-            'on-surface': '#181D16',
-            'on-surface-muted': '#444840',
-            'outline': '#747870',
-            'outline-subtle': '#DCE5D4',
-            'disabled-surface': '#E0E4D9',
-            'on-disabled': '#5B6057',
-          },
-          fontFamily: {
-            'display': ['"Crimson Text"', 'serif'],
-            'headline': ['"Crimson Text"', 'serif'],
-            'title': ['"Lato"', 'sans-serif'],
-            'body': ['"Lato"', 'sans-serif'],
-            'label': ['"Lato"', 'sans-serif'],
-          }
-        }
-      }
-    };
-  </script>
+  <script src="js/theme.js"></script>
 
-  <!-- Google Fonts: Crimson Text & Lato -->
+  <!-- Google Fonts: Gochi Hand (judul), Patrick Hand (judul buku), Nunito (informasi) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,600;0,700;1,600&family=Lato:wght@400;600;700&display=swap" rel="stylesheet">
-  <!-- Material Symbols Outlined -->
+  <link href="https://fonts.googleapis.com/css2?family=Gochi+Hand&family=Patrick+Hand&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=block" rel="stylesheet">
-
-  <style>
-    .material-symbols-outlined {
-      display: inline-block;
-      width: 1em;
-      height: 1em;
-      line-height: 1 !important;
-      vertical-align: middle;
-    }
-  </style>
+  <link rel="stylesheet" href="css/doodle.css">
 </head>
 <body class="bg-surface text-on-surface font-body min-h-screen flex flex-col antialiased selection:bg-mint-green selection:text-forest-green-dark">
 
   <!-- Header & Navbar -->
   <header class="sticky top-0 z-30 bg-surface/95 backdrop-blur-md border-b border-outline-subtle shadow-xs">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-col gap-3.5 lg:flex-row lg:items-center lg:justify-between">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 sm:py-3 flex flex-col gap-3.5 lg:flex-row lg:items-center lg:justify-between">
       
       <!-- Logo Brand & Mobile Action -->
       <div class="flex items-center justify-between gap-4">
-        <a href="index.html" class="inline-flex items-center gap-2.5 text-forest-green hover:opacity-90 transition-opacity">
-          <div class="w-10 h-10 rounded-lg bg-mint-green flex items-center justify-center text-forest-green shadow-xs overflow-hidden">
-            <img src="images/brand_reading_partner_1.jpg" alt="Reading Partner" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
-            <span class="material-symbols-outlined text-2xl font-bold hidden">local_library</span>
-          </div>
-          <div>
-            <span class="font-headline text-2xl font-bold leading-none block">Reading Partner</span>
-            <span class="font-label text-xs text-on-surface-muted tracking-wide">Peminjaman Buku Komunitas</span>
-          </div>
+        <a href="index.html" class="inline-flex items-center hover:opacity-90 transition-opacity" title="Reading Partner">
+          <img src="ic_logo.png" alt="Reading Partner" class="h-14 sm:h-16 md:h-[4.5rem] w-auto object-contain">
         </a>
 
-        <!-- Mobile Login Admin -->
-        <button type="button" onclick="openLoginModal()" class="lg:hidden inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-primary text-primary font-label text-xs font-semibold hover:bg-surface-subtle transition-colors">
-          <span class="material-symbols-outlined text-base">admin_panel_settings</span>
-          <span>Admin</span>
+        <!-- Akun (mobile) -->
+        <button type="button" onclick="openAccount()" class="account-btn lg:hidden inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-primary text-primary font-label text-xs font-semibold hover:bg-surface-subtle transition-colors">
+          <span class="material-symbols-outlined text-base">account_circle</span>
+          <span class="account-label">Masuk</span>
         </button>
       </div>
 
@@ -103,7 +45,7 @@
         </div>
       </div>
 
-      <!-- Filter Status & Desktop Admin Button -->
+      <!-- Filter Status & Tombol Akun -->
       <div class="flex items-center justify-between gap-4">
         <nav aria-label="Filter status buku" class="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
           <button type="button" data-filter="all" class="filter-pill active-pill px-4 py-1.5 rounded-full text-xs font-bold transition-colors cursor-pointer bg-primary text-on-primary">
@@ -113,13 +55,13 @@
             Tersedia
           </button>
           <button type="button" data-filter="dipinjam" class="filter-pill px-4 py-1.5 rounded-full text-xs font-bold transition-colors cursor-pointer bg-surface border border-outline-subtle text-on-surface-muted hover:bg-surface-subtle">
-            Dipinjam
+            Habis
           </button>
         </nav>
 
-        <button type="button" onclick="openLoginModal()" class="hidden lg:inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-primary bg-surface text-primary font-label text-sm font-bold hover:bg-surface-subtle transition-all shadow-2xs">
-          <span class="material-symbols-outlined text-lg">admin_panel_settings</span>
-          <span>Login Admin</span>
+        <button type="button" onclick="openAccount()" class="account-btn hidden lg:inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-primary bg-surface text-primary font-label text-sm font-bold hover:bg-surface-subtle transition-all shadow-2xs">
+          <span class="material-symbols-outlined text-lg">account_circle</span>
+          <span class="account-label">Masuk</span>
         </button>
       </div>
     </div>
@@ -129,7 +71,7 @@
   <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 flex flex-col gap-8">
 
     <!-- Hero Banner -->
-    <section class="bg-gradient-to-r from-mint-green via-mint-green/80 to-[#dbf3c7] rounded-2xl p-6 sm:p-8 flex flex-col md:flex-row md:items-center md:justify-between gap-6 border border-[#a8df89]">
+    <section class="bg-gradient-to-r from-mint-green via-mint-green/80 to-surface-subtle rounded-2xl p-6 sm:p-8 flex flex-col md:flex-row md:items-center md:justify-between gap-6 border ">
       <div class="flex flex-col items-start gap-3 max-w-2xl">
         <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-warm-yellow text-on-tertiary font-label text-xs font-bold shadow-2xs">
           <span class="material-symbols-outlined text-base">auto_stories</span>
@@ -141,6 +83,10 @@
         <p class="font-body text-sm sm:text-base text-forest-green-dark/80 max-w-xl">
           Cek ketersediaan buku secara langsung dan ajukan peminjaman secara mandiri tanpa perlu antre lama.
         </p>
+        <a href="#tentang" class="inline-flex items-center gap-1 font-label text-sm font-bold text-forest-green-dark underline decoration-2 underline-offset-4 hover:text-forest-green">
+          Baru di sini? Kenalan dulu
+          <span class="material-symbols-outlined text-base">arrow_downward</span>
+        </a>
       </div>
 
       <div class="flex items-center gap-4 bg-surface/90 backdrop-blur-sm rounded-xl px-5 py-4 border border-outline-subtle/80 shadow-xs shrink-0 self-start md:self-auto">
@@ -161,9 +107,14 @@
           <h2 class="font-headline text-2xl font-bold text-forest-green">Daftar Buku Koleksi</h2>
           <p class="text-xs sm:text-sm text-on-surface-muted">Pilih buku yang diinginkan untuk mengisi formulir peminjaman</p>
         </div>
-        <span id="catalog-counter" class="font-label text-xs sm:text-sm text-info-teal-text font-bold tabular-nums bg-secondary-soft px-3 py-1 rounded-full border border-info-teal/20">
-          Menampilkan 0 buku
-        </span>
+        <div class="flex items-center gap-2.5">
+          <select id="category-filter" aria-label="Filter kategori" class="pl-3 pr-8 py-1.5 rounded-lg bg-surface border border-outline-subtle text-xs font-bold text-on-surface focus:border-primary outline-none">
+            <option value="">Semua Kategori</option>
+          </select>
+          <span id="catalog-counter" class="font-label text-xs sm:text-sm text-info-teal-text font-bold tabular-nums bg-secondary-soft px-3 py-1 rounded-full border border-info-teal/20">
+            Menampilkan 0 buku
+          </span>
+        </div>
       </div>
 
       <!-- Book Cards Grid -->
@@ -181,19 +132,63 @@
         </button>
       </div>
     </section>
+
+    <!-- Tentang Reading Partner (TEKS CONTOH — ganti dengan info asli komunitas) -->
+    <section id="tentang" class="scroll-mt-28 bg-surface border border-outline-subtle rounded-2xl p-6 sm:p-8 grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-8 items-center">
+      <div class="md:col-span-4 flex justify-center">
+        <img src="images/brand_reading_partner_2.jpg" alt="Ilustrasi Reading Partner" class="w-48 sm:w-60 md:w-full max-w-xs mix-blend-multiply" loading="lazy">
+      </div>
+      <div class="md:col-span-8 flex flex-col gap-5">
+        <div class="flex flex-col gap-2">
+          <h2 class="font-headline text-3xl text-forest-green">Tentang Reading Partner</h2>
+          <p class="text-sm sm:text-base text-on-surface-muted">
+            Reading Partner adalah komunitas baca yang percaya buku bagus lebih seru kalau dibagi. Koleksi kami berasal dari anggota dan donatur, supaya siapa pun bisa meminjam buku secara gratis — cukup pinjam, baca, lalu kembalikan untuk teman berikutnya.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div class="bg-surface-subtle border border-outline-subtle rounded-lg p-4 flex flex-col gap-1">
+            <span class="font-headline text-2xl text-forest-green">1. Pilih</span>
+            <p class="text-xs text-on-surface-muted">Cari buku di katalog dan pastikan statusnya Tersedia.</p>
+          </div>
+          <div class="bg-surface-subtle border border-outline-subtle rounded-lg p-4 flex flex-col gap-1">
+            <span class="font-headline text-2xl text-forest-green">2. Ajukan</span>
+            <p class="text-xs text-on-surface-muted">Masuk atau daftar dengan email, lalu isi form peminjaman.</p>
+          </div>
+          <div class="bg-surface-subtle border border-outline-subtle rounded-lg p-4 flex flex-col gap-1">
+            <span class="font-headline text-2xl text-forest-green">3. Ambil &amp; Baca</span>
+            <p class="text-xs text-on-surface-muted">Admin menghubungimu via WhatsApp untuk jadwal ambil buku.</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+          <div class="flex flex-col gap-1.5">
+            <span class="font-label text-xs font-bold uppercase tracking-wider text-on-surface-muted">Aturan Singkat</span>
+            <ul class="flex flex-col gap-1 text-on-surface">
+              <li class="flex gap-2"><span class="material-symbols-outlined text-base text-forest-green">schedule</span>Lama pinjam 14 hari</li>
+              <li class="flex gap-2"><span class="material-symbols-outlined text-base text-forest-green">menu_book</span>Maksimal 2 buku sekaligus</li>
+              <li class="flex gap-2"><span class="material-symbols-outlined text-base text-forest-green">favorite</span>Jaga buku tetap rapi, ya!</li>
+            </ul>
+          </div>
+          <div class="flex flex-col gap-1.5">
+            <span class="font-label text-xs font-bold uppercase tracking-wider text-on-surface-muted">Hubungi Kami</span>
+            <ul class="flex flex-col gap-1 text-on-surface">
+              <li class="flex gap-2"><span class="material-symbols-outlined text-base text-forest-green">chat</span>WhatsApp 0812-0000-0000</li>
+              <li class="flex gap-2"><span class="material-symbols-outlined text-base text-forest-green">photo_camera</span>Instagram @readingpartner</li>
+              <li class="flex gap-2"><span class="material-symbols-outlined text-base text-forest-green">location_on</span>Bandung, Jawa Barat</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
 
   <!-- Footer -->
   <footer class="mt-auto border-t border-outline-subtle bg-surface-subtle py-6">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-on-surface-muted">
       <div class="flex items-center gap-2">
-        <span class="material-symbols-outlined text-forest-green text-lg">local_library</span>
-        <span>&copy; 2026 <strong>Perpustakaan</strong>. Sistem Peminjaman Buku Komunitas.</span>
-      </div>
-      <div class="flex items-center gap-4">
-        <a href="admin.html" class="hover:text-forest-green transition-colors">Portal Admin</a>
-        <span>&bull;</span>
-        <span class="text-info-teal-text">Budget Rp 0 MVP</span>
+        <img src="ic_logo.png" alt="Reading Partner" class="h-8 w-auto object-contain">
+        <span>&copy; 2026 <strong>Reading Partner</strong>. Sistem Peminjaman Buku Komunitas.</span>
       </div>
     </div>
   </footer>
@@ -209,7 +204,7 @@
           </div>
           <h2 class="font-headline text-xl font-bold text-forest-green">Form Peminjaman Buku</h2>
         </div>
-        <button type="button" onclick="closeBorrowModal()" class="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-muted hover:bg-surface-muted cursor-pointer transition-colors">
+        <button type="button" onclick="closeBorrowModal()" aria-label="Tutup" class="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-muted hover:bg-surface-muted cursor-pointer transition-colors">
           <span class="material-symbols-outlined text-xl">close</span>
         </button>
       </div>
@@ -248,8 +243,8 @@
               <span class="font-label text-xs font-bold text-on-surface flex items-center gap-1">
                 Email <span class="text-red-500">*</span>
               </span>
-              <input type="email" id="borrow-email" required placeholder="nama@email.com" 
-                class="w-full px-3.5 py-2.5 rounded-lg bg-surface border border-outline-subtle text-sm text-on-surface placeholder:text-outline focus:border-primary focus:ring-1 focus:ring-primary outline-none">
+              <input type="email" id="borrow-email" required readonly title="Email dari akun yang sedang masuk" placeholder="nama@email.com" 
+                class="w-full px-3.5 py-2.5 rounded-lg bg-surface-muted cursor-not-allowed border border-outline-subtle text-sm text-on-surface placeholder:text-outline focus:border-primary focus:ring-1 focus:ring-primary outline-none">
             </label>
 
             <label class="flex flex-col gap-1.5">
@@ -280,8 +275,8 @@
               <span id="borrow-photo-label" class="font-label text-xs text-on-surface font-semibold">
                 Klik untuk unggah foto identitas
               </span>
-              <span class="text-[11px] text-on-surface-muted">Format JPG, PNG (Maks 2MB)</span>
-              <input type="file" id="borrow-photo" accept="image/*" onchange="handlePhotoSelect(event)" class="sr-only">
+              <span class="text-[11px] text-on-surface-muted">Format JPG, PNG, WEBP (Maks 2MB)</span>
+              <input type="file" id="borrow-photo" accept="image/jpeg,image/png,image/webp" onchange="handlePhotoSelect(event)" class="sr-only">
             </label>
           </div>
 
@@ -300,81 +295,162 @@
     </div>
   </dialog>
 
-  <!-- ================= MODAL LOGIN ADMIN ================= -->
+  <!-- ================= MODAL DETAIL BUKU ================= -->
+  <dialog id="detail-modal" class="bg-surface border border-outline-subtle rounded-2xl max-w-2xl w-[calc(100%-2rem)] p-0 shadow-2xl backdrop:bg-on-surface/50 backdrop:backdrop-blur-xs">
+    <div class="flex flex-col max-h-[90vh]">
+      <div class="flex items-center justify-between p-4 border-b border-outline-subtle">
+        <span id="detail-category" class="px-2.5 py-1 rounded-full bg-secondary-soft text-info-teal-text font-label text-[11px] font-bold">Kategori</span>
+        <button type="button" onclick="detailModal.close()" aria-label="Tutup" class="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-muted hover:bg-surface-muted cursor-pointer transition-colors">
+          <span class="material-symbols-outlined text-xl">close</span>
+        </button>
+      </div>
+      <div class="p-5 sm:p-6 overflow-y-auto grid grid-cols-1 sm:grid-cols-5 gap-5">
+        <img id="detail-cover" src="" alt="Sampul buku" class="sm:col-span-2 w-40 sm:w-full mx-auto aspect-[3/4] object-cover rounded-md border border-outline-subtle">
+        <div class="sm:col-span-3 flex flex-col gap-3">
+          <div>
+            <h2 id="detail-title" class="font-headline text-3xl text-forest-green leading-tight">Judul</h2>
+            <p id="detail-author" class="text-sm text-on-surface-muted">Penulis</p>
+          </div>
+          <dl class="grid grid-cols-2 gap-2 text-xs">
+            <div class="bg-surface-subtle border border-outline-subtle rounded-lg p-2.5">
+              <dt class="text-on-surface-muted">ISBN</dt>
+              <dd id="detail-isbn" class="font-bold text-on-surface tabular-nums break-all">-</dd>
+            </div>
+            <div class="bg-surface-subtle border border-outline-subtle rounded-lg p-2.5">
+              <dt class="text-on-surface-muted">Stok</dt>
+              <dd id="detail-stock" class="font-bold text-on-surface tabular-nums">-</dd>
+            </div>
+          </dl>
+          <div class="flex flex-col gap-1">
+            <span class="font-label text-xs font-bold uppercase tracking-wider text-on-surface-muted">Sinopsis</span>
+            <p id="detail-synopsis" class="text-sm text-on-surface leading-relaxed"></p>
+          </div>
+          <button id="detail-borrow-btn" type="button" class="mt-auto w-full inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-lg font-label text-sm font-bold">
+            <span class="material-symbols-outlined text-base">bookmark_add</span>
+            <span>Pinjam Buku</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- ================= MODAL MASUK (USER) ================= -->
   <dialog id="login-modal" class="bg-surface border border-outline-subtle rounded-2xl max-w-sm w-[calc(100%-2rem)] p-6 shadow-2xl backdrop:bg-on-surface/50 backdrop:backdrop-blur-xs">
     <div class="flex flex-col gap-5">
       <div class="flex items-center justify-between border-b border-outline-subtle pb-3">
-        <div class="flex items-center gap-2">
-          <div class="w-8 h-8 rounded-lg bg-mint-green text-forest-green-dark flex items-center justify-center">
-            <span class="material-symbols-outlined text-lg">admin_panel_settings</span>
-          </div>
-          <h2 class="font-headline text-xl font-bold text-forest-green">Login Admin</h2>
-        </div>
-        <button type="button" onclick="closeLoginModal()" class="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-muted hover:bg-surface-muted cursor-pointer transition-colors">
+        <h2 class="font-headline text-2xl text-forest-green">Masuk dulu, yuk!</h2>
+        <button type="button" onclick="loginModal.close()" aria-label="Tutup" class="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-muted hover:bg-surface-muted cursor-pointer transition-colors">
           <span class="material-symbols-outlined text-xl">close</span>
         </button>
       </div>
 
-      <div class="p-3 bg-secondary-soft border border-info-teal/30 rounded-lg text-xs text-info-teal-text">
-        <p class="font-semibold flex items-center gap-1">
-          <span class="material-symbols-outlined text-sm">info</span> Mode Prototipe UI
-        </p>
-        <p class="mt-0.5 text-on-surface-muted">Klik tombol masuk untuk langsung menguji Dashboard Admin.</p>
+      <p class="text-sm text-on-surface-muted">Lihat-lihat katalog bebas. Untuk meminjam, masuk atau daftar dulu — cukup sekali, berikutnya form terisi otomatis.</p>
+
+      <div class="grid grid-cols-2 gap-1 p-1 bg-surface-muted rounded-lg">
+        <button type="button" id="tab-masuk" onclick="setAuthMode('masuk')" class="py-2 rounded-md font-label text-sm font-bold cursor-pointer">Masuk</button>
+        <button type="button" id="tab-daftar" onclick="setAuthMode('daftar')" class="py-2 rounded-md font-label text-sm font-bold cursor-pointer">Daftar</button>
       </div>
 
-      <form onsubmit="handleAdminLogin(event)" class="flex flex-col gap-4">
+      <form id="auth-form" onsubmit="handleAuth(event)" class="flex flex-col gap-3">
+        <label id="auth-name-wrap" class="hidden flex flex-col gap-1">
+          <span class="font-label text-xs font-bold text-on-surface">Nama Lengkap</span>
+          <input type="text" id="auth-name" placeholder="Contoh: Siti Rahmawati" autocomplete="name" class="w-full px-3.5 py-2.5 rounded-lg bg-surface border border-outline-subtle text-sm text-on-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none">
+        </label>
         <label class="flex flex-col gap-1">
-          <span class="font-label text-xs font-bold text-on-surface">Email Admin</span>
-          <input type="email" value="admin@perpustakaan.id" required class="w-full px-3.5 py-2 rounded-lg bg-surface border border-outline-subtle text-sm text-on-surface focus:border-primary outline-none">
+          <span class="font-label text-xs font-bold text-on-surface">Email</span>
+          <input type="email" id="auth-email" required placeholder="nama@email.com" autocomplete="email" class="w-full px-3.5 py-2.5 rounded-lg bg-surface border border-outline-subtle text-sm text-on-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none">
         </label>
         <label class="flex flex-col gap-1">
           <span class="font-label text-xs font-bold text-on-surface">Password</span>
-          <input type="password" value="••••••••" required class="w-full px-3.5 py-2 rounded-lg bg-surface border border-outline-subtle text-sm text-on-surface focus:border-primary outline-none">
+          <input type="password" id="auth-password" required minlength="6" placeholder="Minimal 6 karakter" autocomplete="current-password" class="w-full px-3.5 py-2.5 rounded-lg bg-surface border border-outline-subtle text-sm text-on-surface focus:border-primary focus:ring-1 focus:ring-primary outline-none">
         </label>
-
-        <button type="submit" class="w-full mt-2 py-2.5 rounded-lg bg-primary text-on-primary font-label text-sm font-bold hover:opacity-90 transition-opacity cursor-pointer shadow-xs flex items-center justify-center gap-1.5">
+        <button type="submit" class="w-full mt-1 py-2.5 rounded-lg bg-primary text-on-primary font-label text-sm font-bold cursor-pointer flex items-center justify-center gap-1.5">
           <span class="material-symbols-outlined text-base">login</span>
-          <span>Masuk ke Dashboard</span>
+          <span id="auth-submit-label">Masuk</span>
         </button>
       </form>
+
+      <p class="text-[11px] text-on-surface-muted text-center">Lupa password? Hubungi admin via WhatsApp untuk reset.</p>
+    </div>
+  </dialog>
+
+  <!-- ================= MODAL PINJAMAN SAYA ================= -->
+  <dialog id="account-modal" class="bg-surface border border-outline-subtle rounded-2xl max-w-md w-[calc(100%-2rem)] p-6 shadow-2xl backdrop:bg-on-surface/50 backdrop:backdrop-blur-xs">
+    <div class="flex flex-col gap-4 max-h-[80vh]">
+      <div class="flex items-center justify-between border-b border-outline-subtle pb-3">
+        <div class="min-w-0">
+          <h2 class="font-headline text-2xl text-forest-green">Pinjaman Saya</h2>
+          <p id="account-email" class="text-xs text-on-surface-muted truncate"></p>
+        </div>
+        <button type="button" onclick="accountModal.close()" aria-label="Tutup" class="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-muted hover:bg-surface-muted cursor-pointer transition-colors shrink-0">
+          <span class="material-symbols-outlined text-xl">close</span>
+        </button>
+      </div>
+      <div id="account-loans" class="flex flex-col gap-2.5 overflow-y-auto"></div>
+      <div class="flex justify-end pt-2 border-t border-outline-subtle">
+        <button type="button" onclick="handleLogout()" class="px-4 py-2 rounded-lg border border-outline-subtle text-xs font-bold text-on-surface hover:bg-surface-subtle cursor-pointer flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-base">logout</span>
+          <span>Keluar</span>
+        </button>
+      </div>
     </div>
   </dialog>
 
   <!-- JS Logic -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
   <script src="js/store.js"></script>
   <script>
+    const Store = window.PerpusStore;
+    let BOOKS = [];          // cache katalog
+    let USER = null;         // profil user yang masuk (atau null)
     let currentFilter = 'all';
+    let currentCategory = '';
     let searchQuery = '';
-    let selectedPhotoBase64 = null;
+    let selectedPhoto = null;
 
     const booksGrid = document.getElementById('books-grid');
     const emptyState = document.getElementById('empty-state');
     const catalogCounter = document.getElementById('catalog-counter');
     const heroStatText = document.getElementById('hero-stat-text');
     const searchInput = document.getElementById('catalog-search');
+    const categoryFilter = document.getElementById('category-filter');
 
     const borrowModal = document.getElementById('borrow-modal');
     const loginModal = document.getElementById('login-modal');
+    const accountModal = document.getElementById('account-modal');
+    const detailModal = document.getElementById('detail-modal');
+
+    // ===== Katalog =====
+    async function loadBooks() {
+      try {
+        BOOKS = await Store.getBooks();
+      } catch (err) {
+        Store.showToast('Gagal memuat katalog: ' + err.message, 'error');
+        BOOKS = [];
+      }
+      renderCategoryOptions();
+      renderCatalog();
+    }
 
     function renderCatalog() {
-      const books = window.PerpusStore.getBooks();
-      const filtered = books.filter(book => {
+      const esc = Store.esc;
+      const q = searchQuery.toLowerCase();
+      const filtered = BOOKS.filter(book => {
         const isAvail = book.stock_available > 0;
-        const matchesFilter = 
-          currentFilter === 'all' || 
-          (currentFilter === 'tersedia' && isAvail) || 
+        const matchesFilter =
+          currentFilter === 'all' ||
+          (currentFilter === 'tersedia' && isAvail) ||
           (currentFilter === 'dipinjam' && !isAvail);
-        
-        const q = searchQuery.toLowerCase();
-        const matchesQuery = !q || 
-          book.title.toLowerCase().includes(q) || 
-          book.author.toLowerCase().includes(q);
-
-        return matchesFilter && matchesQuery;
+        const matchesCategory = !currentCategory || book.category === currentCategory;
+        const matchesQuery = !q ||
+          book.title.toLowerCase().includes(q) ||
+          book.author.toLowerCase().includes(q) ||
+          (book.isbn || '').replace(/-/g, '').includes(q.replace(/-/g, ''));
+        return matchesFilter && matchesCategory && matchesQuery;
       });
 
-      const totalAvailTitles = books.filter(b => b.stock_available > 0).length;
-      heroStatText.textContent = `${totalAvailTitles} dari ${books.length} Judul Siap Dipinjam`;
+      const totalAvailTitles = BOOKS.filter(b => b.stock_available > 0).length;
+      heroStatText.textContent = `${totalAvailTitles} dari ${BOOKS.length} Judul Siap Dipinjam`;
       catalogCounter.textContent = `Menampilkan ${filtered.length} buku`;
 
       if (filtered.length === 0) {
@@ -386,40 +462,36 @@
       emptyState.classList.add('hidden');
       booksGrid.innerHTML = filtered.map(book => {
         const isAvail = book.stock_available > 0;
-        const badgeCls = isAvail 
-          ? 'bg-mint-green text-forest-green-dark border-mint-green' 
+        const badgeCls = isAvail
+          ? 'bg-mint-green text-forest-green-dark border-mint-green'
           : 'bg-warm-yellow text-on-tertiary border-warm-yellow';
-        const badgeText = isAvail ? 'Tersedia' : 'Dipinjam';
 
         return `
           <article class="flex flex-col justify-between bg-surface border border-outline-subtle rounded-xl p-4 gap-3.5 hover:shadow-md transition-shadow group">
-            <div class="flex flex-col gap-3">
+            <button type="button" onclick="openDetail('${esc(book.id)}')" class="flex flex-col gap-3 text-left cursor-pointer" aria-label="Lihat detail ${esc(book.title)}">
               <div class="relative aspect-[3/4] w-full rounded-lg overflow-hidden bg-surface-muted shadow-2xs">
-                <img src="${book.cover_url}" alt="Sampul ${book.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy">
+                <img src="${esc(book.cover_url)}" alt="Sampul ${esc(book.title)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy">
                 <span class="absolute top-2.5 right-2.5 px-2.5 py-1 rounded-full ${badgeCls} font-label text-xs font-bold shadow-2xs">
-                  ${badgeText}
+                  ${isAvail ? 'Tersedia' : 'Habis'}
                 </span>
               </div>
-              <div class="flex flex-col gap-1">
-                <h3 class="font-title text-base font-bold text-forest-green line-clamp-1 group-hover:text-forest-green-dark">${book.title}</h3>
-                <p class="font-body text-xs text-on-surface-muted line-clamp-1">${book.author}</p>
+              <div class="flex flex-col gap-1 w-full">
+                <span class="text-[11px] font-bold text-info-teal-text uppercase tracking-wide">${esc(book.category || 'Lainnya')}</span>
+                <h3 class="font-title text-base font-bold text-forest-green line-clamp-1 group-hover:text-forest-green-dark">${esc(book.title)}</h3>
+                <p class="font-body text-xs text-on-surface-muted line-clamp-1">${esc(book.author)}</p>
                 <div class="flex items-center justify-between text-xs mt-1">
-                  <span class="font-label text-info-teal-text font-bold tabular-nums">
-                    Stok: ${book.stock_available} buku
-                  </span>
-                  <span class="text-on-surface-muted text-[11px]">
-                    Total: ${book.stock_total}
-                  </span>
+                  <span class="font-label text-info-teal-text font-bold tabular-nums">Stok: ${book.stock_available} buku</span>
+                  <span class="text-on-surface-muted text-[11px]">Total: ${book.stock_total}</span>
                 </div>
               </div>
-            </div>
+            </button>
             <footer>
-              <button type="button" 
+              <button type="button"
                 ${isAvail ? '' : 'disabled'}
-                onclick="openBorrowModal('${book.id}')"
+                onclick="openBorrowModal('${esc(book.id)}')"
                 class="w-full inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-lg font-label text-xs font-bold transition-all ${
-                  isAvail 
-                    ? 'bg-primary text-on-primary hover:opacity-90 shadow-2xs cursor-pointer' 
+                  isAvail
+                    ? 'bg-primary text-on-primary hover:opacity-90 shadow-2xs cursor-pointer'
                     : 'bg-disabled-surface text-on-disabled cursor-not-allowed'
                 }">
                 <span class="material-symbols-outlined text-sm">${isAvail ? 'bookmark_add' : 'block'}</span>
@@ -430,6 +502,37 @@
         `;
       }).join('');
     }
+
+    // Detail buku (sinopsis, ISBN, kategori)
+    function openDetail(bookId) {
+      const book = BOOKS.find(b => b.id === bookId);
+      if (!book) return;
+      const isAvail = book.stock_available > 0;
+      document.getElementById('detail-category').textContent = book.category || 'Lainnya';
+      document.getElementById('detail-cover').src = book.cover_url;
+      document.getElementById('detail-title').textContent = book.title;
+      document.getElementById('detail-author').textContent = book.author;
+      document.getElementById('detail-isbn').textContent = book.isbn || '-';
+      document.getElementById('detail-stock').textContent = `${book.stock_available} dari ${book.stock_total} tersedia`;
+      document.getElementById('detail-synopsis').textContent = book.synopsis || 'Belum ada sinopsis untuk buku ini.';
+      const btn = document.getElementById('detail-borrow-btn');
+      btn.disabled = !isAvail;
+      btn.className = `mt-auto w-full inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-lg font-label text-sm font-bold ${
+        isAvail ? 'bg-primary text-on-primary cursor-pointer' : 'bg-disabled-surface text-on-disabled cursor-not-allowed'}`;
+      btn.lastElementChild.textContent = isAvail ? 'Pinjam Buku' : 'Stok Habis';
+      btn.onclick = () => { detailModal.close(); openBorrowModal(book.id); };
+      detailModal.showModal();
+    }
+
+    // Filter kategori (hanya kategori yang punya buku)
+    function renderCategoryOptions() {
+      const used = new Set(BOOKS.map(b => b.category || 'Lainnya'));
+      const cats = [...Store.CATEGORIES.filter(c => used.has(c)), ...[...used].filter(c => !Store.CATEGORIES.includes(c))];
+      categoryFilter.innerHTML = '<option value="">Semua Kategori</option>' +
+        cats.map(c => `<option value="${Store.esc(c)}">${Store.esc(c)}</option>`).join('');
+      categoryFilter.value = currentCategory;
+    }
+    categoryFilter.addEventListener('change', () => { currentCategory = categoryFilter.value; renderCatalog(); });
 
     // Filter pills
     document.querySelectorAll('.filter-pill').forEach(pill => {
@@ -445,7 +548,6 @@
       });
     });
 
-    // Search input
     searchInput.addEventListener('input', (e) => {
       searchQuery = e.target.value.trim();
       renderCatalog();
@@ -454,14 +556,23 @@
     function resetFilters() {
       searchInput.value = '';
       searchQuery = '';
-      currentFilter = 'all';
+      currentCategory = '';
+      categoryFilter.value = '';
       document.querySelector('[data-filter="all"]').click();
     }
 
-    // Modal Peminjaman
+    // ===== Peminjaman =====
     function openBorrowModal(bookId) {
-      const book = window.PerpusStore.getBooks().find(b => b.id === bookId);
+      const book = BOOKS.find(b => b.id === bookId);
       if (!book || book.stock_available <= 0) return;
+
+      if (!USER) {
+        // Diingat sampai user selesai masuk/daftar
+        sessionStorage.setItem('rp_pending_book', bookId);
+        openLoginModal();
+        return;
+      }
+      sessionStorage.removeItem('rp_pending_book');
 
       document.getElementById('borrow-book-id').value = book.id;
       document.getElementById('modal-book-cover').src = book.cover_url;
@@ -469,8 +580,12 @@
       document.getElementById('modal-book-author').textContent = book.author;
       document.getElementById('modal-book-stock').textContent = `Stok: ${book.stock_available} buku`;
       document.getElementById('borrow-photo-label').textContent = 'Klik untuk unggah foto identitas';
-      selectedPhotoBase64 = null;
+      selectedPhoto = null;
       document.getElementById('borrow-form').reset();
+      document.getElementById('borrow-name').value = USER.name || '';
+      document.getElementById('borrow-email').value = USER.email || '';
+      document.getElementById('borrow-wa').value = USER.wa || '';
+      document.getElementById('borrow-address').value = USER.address || '';
 
       borrowModal.showModal();
     }
@@ -481,53 +596,141 @@
 
     function handlePhotoSelect(e) {
       const file = e.target.files[0];
-      if (file) {
-        document.getElementById('borrow-photo-label').textContent = `File terpilih: ${file.name}`;
-        const reader = new FileReader();
-        reader.onload = (re) => {
-          selectedPhotoBase64 = re.target.result;
-        };
-        reader.readAsDataURL(file);
+      const label = document.getElementById('borrow-photo-label');
+      if (!file) return;
+      if (file.size > 2 * 1024 * 1024) {
+        e.target.value = '';
+        selectedPhoto = null;
+        label.textContent = 'Klik untuk unggah foto identitas';
+        Store.showToast('Ukuran foto maksimal 2MB.', 'error');
+        return;
       }
+      selectedPhoto = file;
+      label.textContent = `File terpilih: ${file.name}`;
     }
 
-    function handleBorrowSubmit(e) {
+    async function handleBorrowSubmit(e) {
       e.preventDefault();
+      const submitBtn = e.target.querySelector('[type=submit]');
       const bookId = document.getElementById('borrow-book-id').value;
-      const borrowerData = {
+      const borrower = {
         name: document.getElementById('borrow-name').value.trim(),
-        email: document.getElementById('borrow-email').value.trim(),
         wa: document.getElementById('borrow-wa').value.trim(),
         address: document.getElementById('borrow-address').value.trim(),
-        idPhotoUrl: selectedPhotoBase64
       };
 
+      submitBtn.disabled = true;
       try {
-        const newLoan = window.PerpusStore.borrowBook(bookId, borrowerData);
+        const loan = await Store.borrowBook(bookId, borrower, selectedPhoto);
+        Object.assign(USER, borrower);   // form berikutnya langsung terisi
         closeBorrowModal();
-        renderCatalog();
-        window.PerpusStore.showToast(`Peminjaman "${newLoan.book_title}" berhasil diajukan!`);
+        Store.showToast(`Peminjaman "${loan.book_title}" berhasil diajukan!`);
+        loadBooks();
       } catch (err) {
-        alert(err.message || 'Terjadi kesalahan saat meminjam buku.');
+        Store.showToast(err.message || 'Terjadi kesalahan saat meminjam buku.', 'error');
+      } finally {
+        submitBtn.disabled = false;
       }
     }
 
-    // Modal Admin Login
+    // ===== Akun user (hybrid: katalog bebas, login saat pinjam) =====
+    function renderAccountButtons() {
+      document.querySelectorAll('.account-label').forEach(el => {
+        el.textContent = USER ? (USER.name || USER.email).split(' ')[0] : 'Masuk';
+      });
+    }
+
     function openLoginModal() {
+      setAuthMode('masuk');
       loginModal.showModal();
     }
 
-    function closeLoginModal() {
-      loginModal.close();
+    // Tab Masuk / Daftar
+    let authMode = 'masuk';
+    function setAuthMode(mode) {
+      authMode = mode;
+      const daftar = mode === 'daftar';
+      const on = ['bg-surface', 'text-forest-green', 'shadow-2xs'], off = ['text-on-surface-muted'];
+      const [act, inact] = daftar ? ['tab-daftar', 'tab-masuk'] : ['tab-masuk', 'tab-daftar'];
+      document.getElementById(act).classList.add(...on);    document.getElementById(act).classList.remove(...off);
+      document.getElementById(inact).classList.remove(...on); document.getElementById(inact).classList.add(...off);
+      document.getElementById('auth-name-wrap').classList.toggle('hidden', !daftar);
+      document.getElementById('auth-name').required = daftar;
+      document.getElementById('auth-password').autocomplete = daftar ? 'new-password' : 'current-password';
+      document.getElementById('auth-submit-label').textContent = daftar ? 'Daftar & Masuk' : 'Masuk';
     }
 
-    function handleAdminLogin(e) {
+    async function openAccount() {
+      if (!USER) { sessionStorage.removeItem('rp_pending_book'); openLoginModal(); return; }
+
+      const esc = Store.esc;
+      document.getElementById('account-email').textContent = `${USER.name || ''} · ${USER.email}`;
+      const list = document.getElementById('account-loans');
+      list.innerHTML = '<p class="text-sm text-on-surface-muted text-center py-6">Memuat...</p>';
+      accountModal.showModal();
+
+      try {
+        const mine = await Store.getLoans();   // RLS: hanya pinjaman sendiri
+        list.innerHTML = mine.length ? mine.map(l => `
+          <div class="bg-surface-subtle border border-outline-subtle rounded-lg p-3 flex items-center justify-between gap-3">
+            <div class="min-w-0">
+              <p class="font-title text-forest-green truncate">${esc(l.book_title)}</p>
+              <p class="text-[11px] text-on-surface-muted">Dipinjam ${Store.fmtDate(l.borrowed_at)}${l.returned_at ? ' · Kembali ' + Store.fmtDate(l.returned_at) : ''}</p>
+            </div>
+            <span class="shrink-0 px-2.5 py-1 rounded-full text-[11px] font-bold ${l.status === 'active' ? 'bg-warm-yellow text-on-tertiary' : 'bg-mint-green text-forest-green-dark'}">${l.status === 'active' ? 'Dipinjam' : 'Selesai'}</span>
+          </div>`).join('')
+          : '<p class="text-sm text-on-surface-muted text-center py-6">Belum ada pinjaman. Yuk pilih buku dari katalog!</p>';
+      } catch (err) {
+        list.innerHTML = `<p class="text-sm text-red-600 text-center py-6">Gagal memuat: ${esc(err.message)}</p>`;
+      }
+    }
+
+    async function handleAuth(e) {
       e.preventDefault();
-      window.location.href = 'admin.html';
+      const btn = e.target.querySelector('[type=submit]');
+      const email = document.getElementById('auth-email').value.trim();
+      const password = document.getElementById('auth-password').value;
+      btn.disabled = true;
+      try {
+        if (authMode === 'daftar') {
+          await Store.signUp(document.getElementById('auth-name').value.trim(), email, password);
+        } else {
+          await Store.signIn(email, password);
+        }
+        e.target.reset();
+        loginModal.close();
+        await refreshUser();   // buka form pinjam kalau tadi sedang memilih buku
+        Store.showToast(`Halo, ${((USER && USER.name) || email).split(' ')[0]}!`);
+      } catch (err) {
+        Store.showToast(err.message, 'error');
+      } finally {
+        btn.disabled = false;
+      }
     }
 
-    // Initial render
-    renderCatalog();
+    async function handleLogout() {
+      await Store.signOut();
+      accountModal.close();
+      Store.showToast('Kamu sudah keluar.');
+    }
+
+    // Sinkron status login (juga antar-tab)
+    async function refreshUser() {
+      try { USER = await Store.getUser(); } catch (err) { USER = null; }
+      renderAccountButtons();
+      const pending = sessionStorage.getItem('rp_pending_book');
+      if (USER && pending) {
+        if (loginModal.open) loginModal.close();
+        openBorrowModal(pending);
+      }
+    }
+
+    Store.onAuthChange((event) => {
+      if (event === 'SIGNED_IN' || event === 'SIGNED_OUT' || event === 'USER_UPDATED') refreshUser();
+    });
+
+    // Initial load
+    loadBooks().then(refreshUser);
   </script>
 </body>
 </html>

@@ -4,13 +4,26 @@ Aplikasi web peminjaman buku komunitas berbasis **Budget Rp 0**, responsif deskt
 
 ## 📁 Struktur Direktori
 ```text
-perpustakaan-app/
-├── index.html        # Katalog buku publik, filter status, pencarian & form peminjaman buku
-├── admin.html        # Dashboard admin: Ringkasan statistik, data peminjam & kelola/tambah buku
-├── js/
-│   └── store.js      # State & data store interaktif (disinkronkan via localStorage)
-└── README.md
+├── index.html          # Katalog publik, detail buku, login user (Google / magic link), form pinjam, "Pinjaman Saya"
+├── admin.html          # Dashboard admin (/admin.html): login, peminjam + filter, riwayat, kelola buku
+├── css/doodle.css      # Gaya doodle (hybrid)
+├── js/theme.js         # Config Tailwind (warna & font)
+├── js/store.js         # Akses data & auth ke Supabase
+└── supabase/schema.sql # Tabel, RLS, fungsi, storage, data awal
 ```
+
+## 🗄️ Setup Supabase (sekali saja)
+1. **SQL Editor** → New query → tempel isi `supabase/schema.sql` → Run.
+2. **Authentication → URL Configuration** → Site URL: alamat produksi Vercel.
+3. **Authentication → Sign In / Providers → Email**: matikan **Confirm email**.
+   Login pakai email + password tanpa kirim email apa pun, jadi tidak kena limit email free tier.
+4. **Jadikan admin**: daftar akun lewat tombol *Masuk → Daftar* di beranda (atau *Authentication → Users → Add user*),
+   lalu jalankan di SQL Editor:
+   ```sql
+   update public.profiles set is_admin = true where email = 'email-admin@contoh.com';
+   ```
+   Buka `/admin.html` dan masuk dengan email + password tersebut.
+5. **Lupa password**: admin reset manual di *Authentication → Users* → pilih user → ubah password.
 
 ## 🎨 Desain & Palet Warna
 - **Primary Forest Green:** `#347928`
@@ -21,10 +34,9 @@ perpustakaan-app/
 
 ## 🚀 Cara Menjalankan
 Karena proyek ini berbasis static web murni (HTML + Tailwind CDN + Vanilla JS), Anda dapat langsung:
-1. Membuka berkas `index.html` langsung di browser favorit Anda (Chrome, Safari, Edge, dll).
-2. Atau jalankan server lokal sederhana:
+1. Katalog bisa dilihat dengan membuka `index.html` langsung.
+2. Atau jalankan server lokal:
    ```bash
-   cd perpustakaan-app
    python3 -m http.server 8080
    ```
    Lalu buka di browser: `http://localhost:8080`
